@@ -1,0 +1,31 @@
+{
+  "name": "requester",
+  "version": "1.0.0",
+  "description": "Paralell requests and retrying made easy",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/snazzy/bin/cmd.js && ./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive"
+  },
+  "author": "queicherius@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "await": "^0.2.5",
+    "node-fetch": "^1.3.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-eslint": "^4.1.6",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-preset-stage-3": "^6.3.13",
+    "chai": "^3.4.1",
+    "fetch-mock": "^4.0.1",
+    "isparta": "^4.0.0",
+    "mocha": "^2.3.4",
+    "rewire": "^2.5.1",
+    "snazzy": "^2.0.1"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  }
+}

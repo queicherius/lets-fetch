@@ -29,12 +29,12 @@ describe('requester', () => {
     expect(content).to.deep.equal({id: 123})
   })
 
-  it('requests a single url as html', async () => {
+  it('requests a single url as text', async () => {
     mockResponses([
       ['http://test.com/test', '<h1>Foo</h1>']
     ])
 
-    let content = await module.single('http://test.com/test', 'html')
+    let content = await module.single('http://test.com/test', 'text')
     expect(content).to.deep.equal('<h1>Foo</h1>')
   })
 
@@ -53,7 +53,7 @@ describe('requester', () => {
     expect(content).to.deep.equal([{id: 123}, {id: 456}, {id: 789}])
   })
 
-  it('requests multiple urls as html', async () => {
+  it('requests multiple urls as text', async () => {
     mockResponses([
       ['http://test.com/test', '<h1>Foo</h1>'],
       ['http://test.com/test2', '<h1>Foo</h1>'],
@@ -64,7 +64,7 @@ describe('requester', () => {
       'http://test.com/test',
       'http://test.com/test2',
       'http://test.com/test3'
-    ], 'html')
+    ], 'text')
     expect(content).to.deep.equal([
       '<h1>Foo</h1>',
       '<h1>Foo</h1>',
@@ -96,7 +96,7 @@ describe('requester', () => {
       await module.many([
         'http://failing.com/no',
         'http://failing.com/yes'
-      ], 'html')
+      ], 'text')
     } catch (e) {
       var err = e
     }

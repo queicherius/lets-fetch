@@ -1,7 +1,7 @@
 {
   "name": "requester",
   "version": "1.0.0",
-  "description": "Paralell requests and retrying made easy",
+  "description": "Single and parallel requests in a simple interface.",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/snazzy/bin/cmd.js && ./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive"

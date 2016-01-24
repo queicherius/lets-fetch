@@ -4,7 +4,7 @@
   "description": "Single and parallel requests in a simple interface.",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/snazzy/bin/cmd.js && ./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive"
+    "test": "echo 'Codestyle...' && node node_modules/snazzy/bin/cmd.js && echo 'Tests...' && ./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive"
   },
   "author": "queicherius@gmail.com",
   "license": "MIT",

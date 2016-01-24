@@ -21,7 +21,7 @@ Please note that this is a ES7 module, and needs to be transpiled by [Babel](htt
 const r = require('requester')
 
 // Set how many times failing requests
-// should be retries (default: 2)
+// should be retried (default: 2)
 r.retries(2)
 
 async function myFunction () {

@@ -7,19 +7,20 @@ const fetchMock = require('fetch-mock')
 const module = rewire('../index.js')
 fetchMock.useNonGlobalFetch(fetch)
 
-describe('requester', () => {
-  beforeEach(() => {
-    fetchMock.restore()
+beforeEach(() => {
+  fetchMock.restore()
+  module.retries(0)
+})
+
+function mockResponses (array) {
+  array.map(args => {
+    fetchMock.mock.apply(fetchMock, args)
   })
 
-  function mockResponses (array) {
-    array.map(a => {
-      fetchMock.mock(a[0], a[1])
-    })
+  module.__set__('fetch', fetchMock.getMock())
+}
 
-    module.__set__('fetch', fetchMock.getMock())
-  }
-
+describe('requesting', () => {
   it('requests a single url as json', async () => {
     mockResponses([
       ['http://test.com/test', {id: 123}]
@@ -71,7 +72,9 @@ describe('requester', () => {
       '<h1>FooBar</h1>'
     ])
   })
+})
 
+describe('error handling', () => {
   it('throws an error for if a request fails', async () => {
     mockResponses([
       ['http://failing.com/yes', 500]
@@ -116,5 +119,74 @@ describe('requester', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
+  })
+})
+
+describe('retrying', () => {
+  it('retries on error till success', async () => {
+    module.retries(100)
+    let tries = 0
+
+    mockResponses([
+      ['http://test.com/test', function () {
+        tries++
+        if (tries === 4) {
+          return 'text'
+        }
+        return 500
+      }]
+    ])
+
+    let content = await module.single('http://test.com/test', 'text')
+    expect(content).to.deep.equal('text')
+    expect(tries).to.equal(4)
+  })
+
+  it('respects the number of retries', async () => {
+    module.retries(2)
+    let tries = 0
+
+    mockResponses([
+      ['http://test.com/test', function () {
+        tries++
+        if (tries === 3) {
+          return 'text'
+        }
+        return 500
+      }]
+    ])
+
+    try {
+      await module.single('http://test.com/test')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+    expect(tries).to.equal(3)
+  })
+
+  it('can disable retrying', async () => {
+    module.retries(0)
+    let tries = 0
+
+    mockResponses([
+      ['http://test.com/test', function () {
+        tries++
+        if (tries === 2) {
+          return 'text'
+        }
+        return 500
+      }]
+    ])
+
+    try {
+      await module.single('http://test.com/test')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+    expect(tries).to.equal(1)
   })
 })

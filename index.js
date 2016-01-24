@@ -1,21 +1,39 @@
 const fetch = require('node-fetch')
 const async = require('async')
 
-// Request a single page
+let maxTries = 3
+
+// Set the maximum number of retries (default: 2)
+function retries (tries) {
+  maxTries = tries + 1
+}
+
+// Request a single url
 async function single (url, type = 'json') {
-  try {
-    let response = await fetch(url)
+  let tries = 0
+  let err
 
-    if (response.status !== 200) {
-      throw new Error(`Status ${response.status}`)
+  while (tries < maxTries) {
+    try {
+      return await request(url, type)
+    } catch (e) {
+      err = e
     }
-
-    return type === 'json'
-      ? await response.json()
-      : await response.text()
-  } catch (e) {
-    throw new Error(`Request failed: ${e.message}`)
+    tries += 1
   }
+
+  throw new Error(`Request failed: ${err.message}`)
+}
+
+// Send a request of a given type to a specific url
+async function request (url, type) {
+  let response = await fetch(url)
+
+  if (response.status !== 200) {
+    throw new Error(`Status ${response.status}`)
+  }
+
+  return type === 'json' ? await response.json() : await response.text()
 }
 
 // Request multiple pages
@@ -48,4 +66,4 @@ async function many (urls, type = 'json') {
   })
 }
 
-module.exports = {single, many}
+module.exports = {retries, single, many}

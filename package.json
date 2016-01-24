@@ -4,9 +4,7 @@
   "description": "Single and parallel requests in a simple interface.",
   "main": "index.js",
   "scripts": {
-    "style": "node node_modules/snazzy/bin/cmd.js",
-    "coverage": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive",
-    "test": "npm run-script coverage && npm run-script style"
+    "test": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive && node node_modules/snazzy/bin/cmd.js"
   },
   "author": "queicherius@gmail.com",
   "license": "MIT",

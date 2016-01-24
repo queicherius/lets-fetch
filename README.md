@@ -2,7 +2,7 @@
 
 [![Travis](https://img.shields.io/travis/gw2efficiency/requester.svg?style=flat-square)](https://travis-ci.org/gw2efficiency/requester)
 
-> Single and parallel requests in a simple interface.
+> Single and parallel requests with automatic retrying in a simple interface.
 
 **NOTE: This module is still heavily in development and the API might change completely. Please don't use it yet.**
 
@@ -18,6 +18,10 @@ Please note that this is a ES7 module, and needs to be transpiled by [Babel](htt
 
 ```js
 const r = require('requester')
+
+// Set how many times failing requests
+// should be retries (default: 2)
+r.retries(2)
 
 async function myFunction () {
   // Get a single url as json

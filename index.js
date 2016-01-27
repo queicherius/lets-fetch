@@ -22,18 +22,38 @@ async function single (url, type = 'json') {
     tries += 1
   }
 
-  throw new Error(`Request failed: ${err.message}`)
+  throw err
 }
 
 // Send a request of a given type to a specific url
 async function request (url, type) {
-  let response = await fetch(url)
+  try {
+    var response = await fetch(url)
+    var decodingException
 
-  if (response.status !== 200) {
-    throw new Error(`Status ${response.status}`)
+    try {
+      var content = type === 'json'
+        ? await response.json()
+        : await response.text()
+    } catch (e) {
+      decodingException = e
+    }
+
+    if (response.status >= 400) {
+      throw new Error(`Status ${response.status}`)
+    }
+
+    if (decodingException) {
+      throw decodingException
+    }
+
+    return content
+  } catch (err) {
+    let error = new Error(err.message)
+    error.response = response
+    error.content = content
+    throw error
   }
-
-  return type === 'json' ? await response.json() : await response.text()
 }
 
 // Request multiple pages

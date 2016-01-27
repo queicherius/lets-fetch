@@ -107,7 +107,7 @@ describe('error handling', () => {
     expect(err).to.exist.and.be.instanceof(Error)
   })
 
-  it('throws an error for malformed json', async () => {
+  it('throws an decoding exception for malformed json', async () => {
     mockResponses([
       ['http://failing.com/malformed', '{"test: "malformed"}']
     ])
@@ -119,6 +119,40 @@ describe('error handling', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
+    expect(err.message).to.contain('Unexpected token')
+  })
+
+  it('throws an status exception for malformed json from a bad status', async () => {
+    mockResponses([
+      ['http://failing.com/malformed', {status: 500, body: 'Error message which is not JSON'}]
+    ])
+
+    try {
+      await module.single('http://failing.com/malformed')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+    expect(err.message).to.equal('Status 500')
+  })
+
+  it('throws an error that includes the response and the content', async () => {
+    mockResponses([
+      ['http://failing.com/erroring', {status: 403, body: '{"text": "authentication required"}'}]
+    ])
+
+    try {
+      await module.single('http://failing.com/erroring')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+    expect(err.response).to.be.an.object
+    expect(err.message).to.equal('Status 403')
+    expect(err.response.status).to.equal(403)
+    expect(err.content).to.deep.equal({text: 'authentication required'})
   })
 })
 

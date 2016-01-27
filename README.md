@@ -20,10 +20,6 @@ Please note that this is a ES7 module, and needs to be transpiled by [Babel](htt
 ```js
 const r = require('requester')
 
-// Set how many times failing requests
-// should be retried (default: 2)
-r.retries(2)
-
 async function myFunction () {
   // Get a single url as json
   let json = await r.single('http://...')
@@ -44,11 +40,32 @@ async function myFunction () {
   // Error handling
   try {
 	let json = await r.single('http://...')
-  } catch (e) {
+  } catch (err) {
 	// Something went wrong :(
+	// err.response is the last response object (e.g. err.response.status)
+	// err.content is the parsed body of the response, if available
   }
 }
+```
 
+### Retry decider
+
+You can set a custom function that gets the current number of tries as well as
+the last error object to decide if the request should be retried. With the default settings,
+retrying is **disabled**.
+
+```js
+const r = require('requester')
+
+// Retry until we get a valid answer
+r.retry(() => true)
+
+// Try to get the answer a total of three times
+r.retry((tries) => tries <= 2)
+
+// Try to get the answer a total of three times if the
+// status code equals to "Internal Server Error"
+r.retry((tries, err) => tries <= 2 && err.response.status === 500)
 ```
 
 ## Tests

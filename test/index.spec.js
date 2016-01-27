@@ -1,5 +1,6 @@
 /* eslint-env node, mocha */
 const expect = require('chai').expect
+const sinon = require('sinon')
 const rewire = require('rewire')
 const fetch = require('node-fetch')
 const fetchMock = require('fetch-mock')
@@ -9,7 +10,6 @@ fetchMock.useNonGlobalFetch(fetch)
 
 beforeEach(() => {
   fetchMock.restore()
-  module.retries(0)
 })
 
 function mockResponses (array) {
@@ -158,7 +158,7 @@ describe('error handling', () => {
 
 describe('retrying', () => {
   it('retries on error till success', async () => {
-    module.retries(100)
+    module.retry(() => true)
     let tries = 0
 
     mockResponses([
@@ -176,8 +176,8 @@ describe('retrying', () => {
     expect(tries).to.equal(4)
   })
 
-  it('respects the number of retries', async () => {
-    module.retries(2)
+  it('respects the decider response', async () => {
+    module.retry((tries) => tries <= 2)
     let tries = 0
 
     mockResponses([
@@ -201,7 +201,7 @@ describe('retrying', () => {
   })
 
   it('can disable retrying', async () => {
-    module.retries(0)
+    module.retry(() => false)
     let tries = 0
 
     mockResponses([
@@ -222,5 +222,36 @@ describe('retrying', () => {
 
     expect(err).to.exist.and.be.instanceof(Error)
     expect(tries).to.equal(1)
+  })
+
+  it('can access the error object and the retries in the retry decider', async () => {
+    let callback = sinon.spy()
+    module.retry(callback)
+    let tries = 0
+
+    mockResponses([
+      ['http://test.com/test', function () {
+        tries++
+        if (tries === 2) {
+          return 'text'
+        }
+        return 500
+      }]
+    ])
+
+    try {
+      await module.single('http://test.com/test')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+    expect(tries).to.equal(1)
+
+    let deciderArguments = callback.args[0]
+    expect(deciderArguments[0]).to.equal(1)
+    expect(deciderArguments[1]).to.exist.and.be.instanceof(Error)
+    expect(deciderArguments[1].response).to.exist
+    expect(deciderArguments[1].response.status).to.equal(500)
   })
 })

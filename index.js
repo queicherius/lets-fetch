@@ -1,11 +1,12 @@
 const fetch = require('node-fetch')
 const async = require('async')
 
-let maxTries = 3
+let retryDecider = () => false
 
-// Set the maximum number of retries (default: 2)
-function retries (tries) {
-  maxTries = tries + 1
+// Set a custom decider function that decides to retry
+// based on the number of tries and the previous error
+function retry (decider) {
+  retryDecider = decider
 }
 
 // Request a single url
@@ -13,13 +14,13 @@ async function single (url, type = 'json') {
   let tries = 0
   let err
 
-  while (tries < maxTries) {
+  while (tries === 0 || retryDecider(tries, err)) {
     try {
       return await request(url, type)
     } catch (e) {
       err = e
+      tries += 1
     }
-    tries += 1
   }
 
   throw err
@@ -86,4 +87,4 @@ async function many (urls, type = 'json') {
   })
 }
 
-module.exports = {retries, single, many}
+module.exports = {retry, single, many}

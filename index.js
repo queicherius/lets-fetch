@@ -11,10 +11,10 @@ function retry (decider) {
 
 // Request a single url
 async function single (url, type = 'json') {
-  let tries = 0
+  let tries = 1
   let err
 
-  while (tries === 0 || retryDecider(tries, err)) {
+  while (tries === 1 || retryDecider(tries, err)) {
     try {
       return await request(url, type)
     } catch (e) {

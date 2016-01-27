@@ -177,7 +177,7 @@ describe('retrying', () => {
   })
 
   it('respects the decider response', async () => {
-    module.retry((tries) => tries <= 2)
+    module.retry((tries) => tries <= 3)
     let tries = 0
 
     mockResponses([
@@ -249,7 +249,7 @@ describe('retrying', () => {
     expect(tries).to.equal(1)
 
     let deciderArguments = callback.args[0]
-    expect(deciderArguments[0]).to.equal(1)
+    expect(deciderArguments[0]).to.equal(2)
     expect(deciderArguments[1]).to.exist.and.be.instanceof(Error)
     expect(deciderArguments[1].response).to.exist
     expect(deciderArguments[1].response.status).to.equal(500)

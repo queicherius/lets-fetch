@@ -61,11 +61,11 @@ const r = require('requester')
 r.retry(() => true)
 
 // Try to get the answer a total of three times
-r.retry((tries) => tries <= 2)
+r.retry((tries) => tries <= 3)
 
 // Try to get the answer a total of three times if the
 // status code equals to "Internal Server Error"
-r.retry((tries, err) => tries <= 2 && err.response.status === 500)
+r.retry((tries, err) => tries <= 3 && err.response.status === 500)
 ```
 
 ## Tests

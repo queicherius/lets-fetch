@@ -1,6 +1,13 @@
 const fetch = require('node-fetch')
 const async = require('async')
 
+const defaultOptions = {
+  type: 'json',
+  method: 'GET',
+  headers: {},
+  body: null
+}
+
 let retryDecider = () => false
 
 // Set a custom decider function that decides to retry
@@ -10,13 +17,13 @@ function retry (decider) {
 }
 
 // Request a single url
-async function single (url, type = 'json') {
+async function single (url, options = {}) {
   let tries = 1
   let err
 
   while (tries === 1 || retryDecider(tries, err)) {
     try {
-      return await request(url, type)
+      return await request(url, options)
     } catch (e) {
       err = e
       tries += 1
@@ -26,14 +33,16 @@ async function single (url, type = 'json') {
   throw err
 }
 
-// Send a request of a given type to a specific url
-async function request (url, type) {
+// Send a request using the underlying fetch API
+async function request (url, options) {
+  options = {...defaultOptions, ...options}
+
   try {
-    var response = await fetch(url)
+    var response = await fetch(url, options)
     var decodingException
 
     try {
-      var content = type === 'json'
+      var content = options.type === 'json'
         ? await response.json()
         : await response.text()
     } catch (e) {
@@ -58,7 +67,7 @@ async function request (url, type) {
 }
 
 // Request multiple pages
-async function many (urls, type = 'json') {
+async function many (urls, options = {}) {
   return new Promise((resolve, reject) => {
     let calls = []
 
@@ -67,7 +76,7 @@ async function many (urls, type = 'json') {
     urls.map(url => {
       calls.push(async (callback) => {
         try {
-          let content = await single(url, type)
+          let content = await single(url, options)
           callback(null, content)
         } catch (err) {
           callback(err)

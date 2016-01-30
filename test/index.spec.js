@@ -35,7 +35,7 @@ describe('requesting', () => {
       ['http://test.com/test', '<h1>Foo</h1>']
     ])
 
-    let content = await module.single('http://test.com/test', 'text')
+    let content = await module.single('http://test.com/test', {type: 'text'})
     expect(content).to.deep.equal('<h1>Foo</h1>')
   })
 
@@ -65,12 +65,43 @@ describe('requesting', () => {
       'http://test.com/test',
       'http://test.com/test2',
       'http://test.com/test3'
-    ], 'text')
+    ], {type: 'text'})
     expect(content).to.deep.equal([
       '<h1>Foo</h1>',
       '<h1>Foo</h1>',
       '<h1>FooBar</h1>'
     ])
+  })
+
+  it('provides "fetch" with the options', async () => {
+    mockResponses([
+      ['http://test.com/test', {id: 123}]
+    ])
+
+    let content = await module.single('http://test.com/test')
+    expect(content).to.deep.equal({id: 123})
+    expect(fetchMock.lastOptions()).to.deep.equal({
+      type: 'json',
+      method: 'GET',
+      headers: {},
+      body: null
+    })
+  })
+
+  it('can overwrite the default "fetch" options', async () => {
+    mockResponses([
+      ['http://test.com/test', '<h1>Foo</h1>']
+    ])
+
+    let options = {
+      type: 'text',
+      method: 'POST',
+      headers: {'Authentication': 'Test'},
+      body: 'foo=bar'
+    }
+    let content = await module.single('http://test.com/test', options)
+    expect(content).to.deep.equal('<h1>Foo</h1>')
+    expect(fetchMock.lastOptions()).to.deep.equal(options)
   })
 })
 
@@ -99,7 +130,7 @@ describe('error handling', () => {
       await module.many([
         'http://failing.com/no',
         'http://failing.com/yes'
-      ], 'text')
+      ], {type: 'text'})
     } catch (e) {
       var err = e
     }
@@ -171,7 +202,7 @@ describe('retrying', () => {
       }]
     ])
 
-    let content = await module.single('http://test.com/test', 'text')
+    let content = await module.single('http://test.com/test', {type: 'text'})
     expect(content).to.deep.equal('text')
     expect(tries).to.equal(4)
   })

@@ -15,27 +15,19 @@ npm install https://github.com/gw2efficiency/requester
 
 ## Usage
 
-Please note that this is a ES7 module, and needs to be transpiled by [Babel](https://github.com/babel/babel).
+Please note that this is a ES7 module and needs to be transpiled by [Babel](https://github.com/babel/babel).
 
 ```js
 const r = require('requester')
 
 async function myFunction () {
-  // Get a single url as json
+  // Get a single url
   let json = await r.single('http://...')
   // -> {foo: bar}
 	
-  // Get a single url as text
-  let html = await r.single('http://...', 'text')
-  // -> '<h1>html</h1>'
-	
-  // Get multiple urls as json
+  // Get multiple urls
   let json = await r.many(['http://...', 'http://...'])
   // -> [{foo: bar}, {foobar: 1}]
-	
-  // Get multiple urls as text
-  let json = await r.many(['http://...', 'http://...'], 'text')
-  // -> ['<h1>html</h1>', 'Maybe plain text']
 	
   // Error handling
   try {
@@ -46,6 +38,22 @@ async function myFunction () {
 	// err.content is the parsed body of the response, if available
   }
 }
+```
+
+### Options
+
+You can pass `single` and `many` an optional `options` parameter. 
+The available options with their corresponding defaults are:
+
+```js
+let options = {
+  type: 'json',   // response type, can be either "json" or "text"
+  method: 'GET',  // request method to use
+  headers: {},    // request headers, format {a:1} or {b:[1,2,3]}
+  body: null      // request body, can be a string or readable stream
+}
+
+await r.single('http://...', options)
 ```
 
 ### Retry decider

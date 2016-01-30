@@ -63,8 +63,6 @@ the last error object to decide if the request should be retried. With the defau
 retrying is **disabled**.
 
 ```js
-const r = require('requester')
-
 // Retry until we get a valid answer
 r.retry(() => true)
 
@@ -74,6 +72,24 @@ r.retry((tries) => tries <= 3)
 // Try to get the answer a total of three times if the
 // status code equals to "Internal Server Error"
 r.retry((tries, err) => tries <= 3 && err.response.status === 500)
+```
+
+### Request statistics
+
+You can easily enable statistics about the hit urls, amount of requests and request times in milliseconds.
+
+```js
+r.statistics(true)
+
+// Execute some requests
+await r.single('http://url.com')
+await r.single('http://url.com')
+await r.single('http://url.com')
+
+// Holds all requested urls as keys and an array
+// of milliseconds that correspond to each request
+console.log(r.requestStatistics)
+// -> {'http://url.com': [ 11, 444, 11 ], /* ... */}
 ```
 
 ## Tests

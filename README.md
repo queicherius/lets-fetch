@@ -3,7 +3,7 @@
 [![Travis](https://img.shields.io/travis/gw2efficiency/requester.svg?style=flat-square)](https://travis-ci.org/gw2efficiency/requester)
 [![Coveralls](https://img.shields.io/coveralls/gw2efficiency/requester/master.svg?style=flat-square)](https://coveralls.io/github/gw2efficiency/requester?branch=master)
 
-> Single and parallel requests with automatic retrying in a simple interface.
+> Single and parallel requests with retrying in a simple interface.
 
 **NOTE: This module is still heavily in development and the API might change completely. Please don't use it yet.**
 

@@ -5,7 +5,7 @@ const rewire = require('rewire')
 const fetch = require('node-fetch')
 const fetchMock = require('fetch-mock')
 
-const module = rewire('../index.js')
+const module = rewire('../src/index.js')
 fetchMock.useNonGlobalFetch(fetch)
 
 beforeEach(() => {

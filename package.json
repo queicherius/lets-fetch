@@ -2,9 +2,9 @@
   "name": "requester",
   "version": "1.0.0",
   "description": "Single and parallel requests in a simple interface.",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
-    "test": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive && node node_modules/snazzy/bin/cmd.js"
+    "test": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- tests/ --recursive && node node_modules/snazzy/bin/cmd.js"
   },
   "author": "queicherius@gmail.com",
   "license": "MIT",

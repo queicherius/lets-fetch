@@ -72,7 +72,9 @@ describe('requesting', () => {
       '<h1>FooBar</h1>'
     ])
   })
+})
 
+describe('underlying fetch api', () => {
   it('provides "fetch" with the options', async () => {
     mockResponses([
       ['http://test.com/test', {id: 123}]
@@ -105,8 +107,46 @@ describe('requesting', () => {
   })
 })
 
+describe('request statistics', () => {
+  it('doesn\'t generate statistics by default', async () => {
+    mockResponses([['http://test.com/test', {foo: 'bar'}]])
+    await module.single('http://test.com/test')
+    await module.single('http://test.com/test')
+
+    expect(module.requestStatistics).to.deep.equal({})
+  })
+
+  it('can generate statistics about requests', async () => {
+    module.statistics(true)
+
+    mockResponses([
+      ['http://test.com/test', {foo: 'bar'}],
+      ['http://test.com/test2', {foo: 'bar'}]
+    ])
+    await module.single('http://test.com/test')
+    await module.single('http://test.com/test')
+    await module.single('http://test.com/test2')
+
+    expect(Object.keys(module.requestStatistics)).to.deep.equal([
+      'http://test.com/test', 'http://test.com/test2'
+    ])
+    expect(module.requestStatistics['http://test.com/test'].length).to.equal(2)
+  })
+
+  it('can disable statistics', async () => {
+    module.statistics(false)
+    module.requestStatistics = {}
+
+    mockResponses([['http://test.com/test', {foo: 'bar'}]])
+    await module.single('http://test.com/test')
+    await module.single('http://test.com/test')
+
+    expect(module.requestStatistics).to.deep.equal({})
+  })
+})
+
 describe('error handling', () => {
-  it('throws an error for if a request fails', async () => {
+  it('throws an error if a request fails', async () => {
     mockResponses([
       ['http://failing.com/yes', 500]
     ])
@@ -120,7 +160,7 @@ describe('error handling', () => {
     expect(err).to.exist.and.be.instanceof(Error)
   })
 
-  it('throws an error for if a request of many fails', async () => {
+  it('throws an error if a request of many fails', async () => {
     mockResponses([
       ['http://failing.com/no', '<h1>Foo</h1>'],
       ['http://failing.com/yes', 500]
@@ -153,7 +193,7 @@ describe('error handling', () => {
     expect(err.message).to.contain('Unexpected token')
   })
 
-  it('throws an status exception for malformed json from a bad status', async () => {
+  it('always throws an status exception from a bad status', async () => {
     mockResponses([
       ['http://failing.com/malformed', {status: 500, body: 'Error message which is not JSON'}]
     ])

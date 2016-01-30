@@ -10,10 +10,18 @@ const defaultOptions = {
 
 let retryDecider = () => false
 
+let requestStatistics = {}
+let generateStatistics = false
+
 // Set a custom decider function that decides to retry
 // based on the number of tries and the previous error
 function retry (decider) {
   retryDecider = decider
+}
+
+// Toggle generating statistics
+function statistics (bool) {
+  generateStatistics = bool
 }
 
 // Request a single url
@@ -38,8 +46,16 @@ async function request (url, options) {
   options = {...defaultOptions, ...options}
 
   try {
-    var response = await fetch(url, options)
+    var response
     var decodingException
+
+    if (!generateStatistics) {
+      response = await fetch(url, options)
+    } else {
+      let start = new Date()
+      response = await fetch(url, options)
+      requestStatistics[url] = (requestStatistics[url] || []).concat(new Date() - start)
+    }
 
     try {
       var content = options.type === 'json'
@@ -96,4 +112,4 @@ async function many (urls, options = {}) {
   })
 }
 
-module.exports = {retry, single, many}
+module.exports = {retry, statistics, requestStatistics, single, many}

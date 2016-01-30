@@ -39,6 +39,17 @@ describe('requesting', () => {
     expect(content).to.deep.equal('<h1>Foo</h1>')
   })
 
+  it('requests a single url as response object', async () => {
+    mockResponses([
+      ['http://test.com/test', '<h1>Foo</h1>']
+    ])
+
+    let content = await module.single('http://test.com/test', {type: 'response'})
+    expect(content.url).to.equal('http://test.com/test')
+    expect(content.status).to.equal(200)
+    expect(content.headers).to.exist
+  })
+
   it('requests multiple urls as json', async () => {
     mockResponses([
       ['http://test.com/test', {id: 123}],
@@ -71,6 +82,23 @@ describe('requesting', () => {
       '<h1>Foo</h1>',
       '<h1>FooBar</h1>'
     ])
+  })
+
+  it('requests multiple urls as response objects', async () => {
+    mockResponses([
+      ['http://test.com/test', '<h1>Foo</h1>'],
+      ['http://test.com/test2', '<h1>Foo</h1>'],
+      ['http://test.com/test3', '<h1>FooBar</h1>']
+    ])
+
+    let content = await module.many([
+      'http://test.com/test',
+      'http://test.com/test2',
+      'http://test.com/test3'
+    ], {type: 'response'})
+    expect(content[0].url).to.equal('http://test.com/test')
+    expect(content[0].status).to.equal(200)
+    expect(content[0].headers).to.exist
   })
 })
 
@@ -153,6 +181,20 @@ describe('error handling', () => {
 
     try {
       await module.single('http://failing.com/yes')
+    } catch (e) {
+      var err = e
+    }
+
+    expect(err).to.exist.and.be.instanceof(Error)
+  })
+
+  it('throws an error if a request fails even when we get the response object', async () => {
+    mockResponses([
+      ['http://failing.com/yes', 500]
+    ])
+
+    try {
+      await module.single('http://failing.com/yes', {type: 'response'})
     } catch (e) {
       var err = e
     }

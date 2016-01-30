@@ -47,6 +47,7 @@ async function request (url, options) {
 
   try {
     var response
+    var content
     var decodingException
 
     if (!generateStatistics) {
@@ -57,12 +58,14 @@ async function request (url, options) {
       requestStatistics[url] = (requestStatistics[url] || []).concat(new Date() - start)
     }
 
-    try {
-      var content = options.type === 'json'
-        ? await response.json()
-        : await response.text()
-    } catch (e) {
-      decodingException = e
+    if (options.type === 'response') {
+      content = response
+    } else {
+      try {
+        content = options.type === 'json' ? await response.json() : await response.text()
+      } catch (e) {
+        decodingException = e
+      }
     }
 
     if (response.status >= 400) {

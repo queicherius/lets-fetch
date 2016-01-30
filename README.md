@@ -47,7 +47,7 @@ The available options with their corresponding defaults are:
 
 ```js
 let options = {
-  type: 'json',   // response type, can be either "json" or "text"
+  type: 'json',   // response type, can be "json", "text" or "response" (response object)
   method: 'GET',  // request method to use
   headers: {},    // request headers, format {a:1} or {b:[1,2,3]}
   body: null      // request body, can be a string or readable stream

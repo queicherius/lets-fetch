@@ -139,7 +139,7 @@ requesterMock.options()
 
 // Get the options of the last request
 requesterMock.lastOptions()
-``
+```
 
 ## Tests
 

@@ -5,7 +5,7 @@
 
 > Single and parallel requests with retrying in a simple interface.
 
-**NOTE: This module is still heavily in development and the API might change completely. Please don't use it yet.**
+** :bomb: NOTE: This module is still heavily in development and the API might change completely. Please don't use it yet.**
 
 ## Install
 

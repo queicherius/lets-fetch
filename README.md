@@ -15,6 +15,10 @@ This module can be used for Node.js as well as browsers using [Browserify](https
 npm install https://github.com/gw2efficiency/requester
 ```
 
+(Note: This pulls in Babel as a dependency, because the module is written in ES7 and 
+gets compiled into ES5 during the installation. The Babel code is **not** included in the module, 
+don't be shocked at the dependency tree. :wink:)
+
 ## Usage
 
 ```js

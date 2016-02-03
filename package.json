@@ -2,22 +2,23 @@
   "name": "requester",
   "version": "1.0.0",
   "description": "Single and parallel requests in a simple interface.",
-  "main": "./src/index.js",
+  "main": "./build/index.js",
   "scripts": {
+    "postinstall": "./node_modules/.bin/babel src/ -d build/",
     "test": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/.bin/isparta cover --include-all-sources ./node_modules/.bin/_mocha -- tests/ --recursive && node node_modules/snazzy/bin/cmd.js"
   },
   "author": "queicherius@gmail.com",
   "license": "MIT",
   "dependencies": {
     "await": "^0.2.5",
-    "node-fetch": "^1.3.3"
-  },
-  "devDependencies": {
+    "node-fetch": "^1.3.3",
     "babel-cli": "^6.4.5",
-    "babel-eslint": "^4.1.6",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
-    "babel-preset-stage-3": "^6.3.13",
+    "babel-preset-stage-3": "^6.3.13"
+  },
+  "devDependencies": {
+    "babel-eslint": "^4.1.6",
     "chai": "^3.4.1",
     "coveralls": "^2.11.6",
     "fetch-mock": "^4.0.1",

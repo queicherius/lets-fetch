@@ -9,13 +9,13 @@
 
 ## Install
 
-This module can be used for Node.js as well as browsers using [Browserify](https://github.com/substack/browserify-handbook#how-node_modules-works).
-
 ```
 npm install https://github.com/gw2efficiency/requester
 ```
 
-(Note: This pulls in Babel as a dependency, because the module is written in ES7 and 
+This module can be used for Node.js as well as browsers using [Browserify](https://github.com/substack/browserify-handbook#how-node_modules-works).
+
+(Note: Babel gets pulled in as a dependency, because the module is written in ES7 and 
 gets compiled into ES5 during the installation. The Babel code is **not** included in the module, 
 don't be shocked at the dependency tree. :wink:)
 
@@ -24,6 +24,7 @@ don't be shocked at the dependency tree. :wink:)
 ```js
 const r = require('requester')
 
+// ES7
 async function myFunction () {
   // Get a single url
   let json = await r.single('http://...')
@@ -42,6 +43,11 @@ async function myFunction () {
 	// err.content is the parsed body of the response, if available
   }
 }
+
+// Promises
+r.single('http://...')
+ .then(x => console.log('content:', x))
+ .catch(e => console.log('error:', e))
 ```
 
 ### Options

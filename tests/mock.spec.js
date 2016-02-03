@@ -63,6 +63,7 @@ describe('mock', () => {
 
     expect(err).to.exist
     expect(err).to.instanceOf(Error)
+    expect(module.lastUrl()).to.equal('some/url')
   })
 
   it('can enable the real module (many)', async () => {
@@ -79,6 +80,7 @@ describe('mock', () => {
 
     expect(err).to.exist
     expect(err).to.instanceOf(Error)
+    expect(module.lastUrl()).to.equal('some/url')
   })
 
   it('can disable the real module again', async () => {

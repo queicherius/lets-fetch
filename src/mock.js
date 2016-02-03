@@ -30,22 +30,25 @@ var mock = {
     mockingEnabled = bool
   },
   single: async (url, opt) => {
+    urls.push(url)
+    options.push(opt)
+
     if (!mockingEnabled) {
       return await real.single(url, opt)
     }
 
-    urls.push(url)
-    options.push(opt)
     return responses.shift()
   },
-  many: async (urls, opt) => {
+  many: async (url, opt) => {
     if (!mockingEnabled) {
-      return await real.many(urls, opt)
+      urls = urls.concat(url)
+      options = options.concat(opt)
+      return await real.many(url, opt)
     }
 
     let requests = []
-    for (let i in urls) {
-      requests = requests.concat(await mock.single(urls[i], opt))
+    for (let i in url) {
+      requests = requests.concat(await mock.single(url[i], opt))
     }
     return requests
   }

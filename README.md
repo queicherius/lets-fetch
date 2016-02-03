@@ -9,13 +9,13 @@
 
 ## Install
 
+This module can be used for Node.js as well as browsers using [Browserify](https://github.com/substack/browserify-handbook#how-node_modules-works).
+
 ```
 npm install https://github.com/gw2efficiency/requester
 ```
 
 ## Usage
-
-Please note that this is a ES7 module and needs to be transpiled by [Babel](https://github.com/babel/babel).
 
 ```js
 const r = require('requester')

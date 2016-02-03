@@ -121,6 +121,10 @@ testingModule.__set__('requester', requesterMock)
 // have to be handled appropriately in your tests (.then/.catch or await)
 requesterMock.addResponse({text: 'Everything fine!'})
 
+// Enable / disable mocking. When mocking is disabled the requests
+// get passed through to the real module and get send over the internet
+requesterMock.enableMocking(true)
+
 // Reset all responses and collected requests
 requesterMock.reset()
 

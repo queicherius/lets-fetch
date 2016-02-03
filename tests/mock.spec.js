@@ -48,4 +48,46 @@ describe('mock', () => {
     let x = await module.single('some/url')
     expect(x).to.equal(undefined)
   })
+
+  it('can enable the real module (single)', async () => {
+    let err
+    module.reset()
+    module.addResponse({foo: 'bar'})
+    module.enableMocking(false)
+
+    try {
+      await module.single('some/url')
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).to.exist
+    expect(err).to.instanceOf(Error)
+  })
+
+  it('can enable the real module (many)', async () => {
+    let err
+    module.reset()
+    module.addResponse({foo: 'bar'})
+    module.enableMocking(false)
+
+    try {
+      await module.many(['some/url'])
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).to.exist
+    expect(err).to.instanceOf(Error)
+  })
+
+  it('can disable the real module again', async () => {
+    module.reset()
+    module.enableMocking(false)
+    module.addResponse({foo: 'bar'})
+    module.enableMocking(true)
+
+    let x = await module.single('some/url')
+    expect(x).to.deep.equal({foo: 'bar'})
+  })
 })

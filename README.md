@@ -96,6 +96,41 @@ console.log(r.requestStatistics)
 // -> {'http://url.com': [ 11, 444, 11 ], /* ... */}
 ```
 
+## Mocking
+
+If you want to mock requester in your tests, you can replace it with
+the included mock module, e.g. using [rewire](https://github.com/jhnns/rewire) (or write your own!).
+
+```js
+let rewire = require('rewire')
+let requesterMock = require('requester/mock')
+let testingModule = rewire('./test.js')
+
+testingModule.__set__('requester', requesterMock)
+
+// Add a response (e.g. json or a string). This is based on a "stack" system,
+// every response will only get output once. "single" will output the first 
+// response added, "many" will loop through multiple single calls.
+// "single" and "many" will still return promises and 
+// have to be handled appropriately in your tests (.then/.catch or await)
+requesterMock.addResponse({text: 'Everything fine!'})
+
+// Reset all responses and collected requests
+requesterMock.reset()
+
+// Get all requested urls
+requesterMock.urls()
+
+// Get the url of the last request
+requesterMock.lastUrl()
+
+// Get the requested options
+requesterMock.options()
+
+// Get the options of the last request
+requesterMock.lastOptions()
+``
+
 ## Tests
 
 ```

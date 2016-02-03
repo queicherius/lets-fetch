@@ -118,7 +118,7 @@ testingModule.__set__('requester', requesterMock)
 // every response will only get output once. "single" will output the first 
 // response added, "many" will loop through multiple single calls.
 // "single" and "many" will still return promises and 
-// have to be handled appropriately in your tests (.then/.catch or await)
+// have to be handled appropriately in your tests (.then or await)
 requesterMock.addResponse({text: 'Everything fine!'})
 
 // Enable / disable mocking. When mocking is disabled the requests

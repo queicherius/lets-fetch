@@ -1,7 +1,7 @@
 # requester
 
-[![Travis](https://img.shields.io/travis/gw2efficiency/requester.svg?style=flat-square)](https://travis-ci.org/gw2efficiency/requester)
-[![Coveralls](https://img.shields.io/coveralls/gw2efficiency/requester/master.svg?style=flat-square)](https://coveralls.io/github/gw2efficiency/requester?branch=master)
+[![Build Status](https://img.shields.io/travis/gw2efficiency/requester.svg?style=flat-square)](https://travis-ci.org/gw2efficiency/requester)
+[![Coverage Status](https://img.shields.io/codecov/c/github/gw2efficiency/requester/master.svg?style=flat-square)](https://codecov.io/github/gw2efficiency/requester)
 
 > Single and parallel requests with retrying in a simple interface.
 

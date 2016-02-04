@@ -91,12 +91,14 @@ async function many (urls, options = {}) {
   return new Promise((resolve, reject) => {
     let calls = []
 
-    // Map over the calls and build around the callbacks
-    // that "async.parallel" requires
+    // Map over the calls and build the callbacks that async requires
     urls.map(url => {
       calls.push(async (callback) => {
         try {
           let content = await single(url, options)
+          if (options.waitTime) {
+            await sleep(options.waitTime)
+          }
           callback(null, content)
         } catch (err) {
           callback(err)
@@ -104,15 +106,29 @@ async function many (urls, options = {}) {
       })
     })
 
-    // Send all requests at the same time and resolve when we are done
-    async.parallel(calls, (err, results) => {
+    // Function to resolve the promise when all calls are done
+    let done = (err, results) => {
       if (err) {
-        reject(err)
-        return
+        return reject(err)
       }
-
       resolve(results)
-    })
+    }
+
+    // Send all requests at the same time and resolve when we are done
+    if (!options.waitTime) {
+      async.parallel(calls, done)
+      return
+    }
+
+    // We have a wait time set between each call, so we call in series
+    async.series(calls, done)
+  })
+}
+
+// Sleeps an amount of milliseconds
+function sleep (delay) {
+  return new Promise(resolve => {
+    setTimeout(resolve, delay)
   })
 }
 

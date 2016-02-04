@@ -102,6 +102,41 @@ describe('requesting', () => {
   })
 })
 
+describe('waiting', () => {
+  it('waits when using the sleep method', async () => {
+    let start = new Date()
+    await module.__get__('sleep')(100)
+    expect(new Date() - start).to.be.above(100)
+  })
+
+  it('uses parallel calls if no wait time is specified', async () => {
+    mockResponses([
+      ['^http', () => ({time: new Date().getTime()})]
+    ])
+
+    let timestamps = await module.many(['http://1.com', 'http://2.com', 'http://3.com'])
+
+    timestamps = timestamps.map(x => x.time)
+    expect(timestamps[1] - timestamps[0]).to.be.below(20)
+    expect(timestamps[2] - timestamps[1]).to.be.below(20)
+  })
+
+  it('uses sequential calls and waits if a wait time is specified', async () => {
+    mockResponses([
+      ['^http', () => ({time: new Date().getTime()})]
+    ])
+
+    let timestamps = await module.many(
+      ['http://1.com', 'http://2.com', 'http://3.com'],
+      {waitTime: 100}
+    )
+
+    timestamps = timestamps.map(x => x.time)
+    expect(timestamps[1] - timestamps[0]).to.be.above(100)
+    expect(timestamps[2] - timestamps[1]).to.be.above(100)
+  })
+})
+
 describe('underlying fetch api', () => {
   it('provides "fetch" with the options', async () => {
     mockResponses([

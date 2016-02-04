@@ -57,10 +57,21 @@ The available options with their corresponding defaults are:
 
 ```js
 let options = {
-  type: 'json',   // response type, can be "json", "text" or "response" (response object)
-  method: 'GET',  // request method to use
-  headers: {},    // request headers, format {a:1} or {b:[1,2,3]}
-  body: null      // request body, can be a string or readable stream
+  // response type, can be "json", "text" or "response" (response object)
+  type: 'json',
+  
+  // request method to use
+  method: 'GET',
+  
+  // request headers, format {a:1} or {b:[1,2,3]}
+  headers: {},
+  
+  // request body, can be a string or readable stream
+  body: null,
+  
+  // wait time in between requests (only for "many")
+  // as soon as this is set, requests will be sent sequential instead of parallel
+  waitTime: undefined
 }
 
 await r.single('http://...', options)

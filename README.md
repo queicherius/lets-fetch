@@ -75,12 +75,13 @@ let options = {
 }
 
 await r.single('http://...', options)
+await r.many(['http://...'], options)
 ```
 
 ### Retrying
 
 You can set a custom function that gets the current number of tries as well as
-the last error object to decide if the request should be retried. With the default settings,
+the last error object to decide if the request should be retried. By default,
 retrying is **disabled**.
 
 ```js
@@ -95,11 +96,14 @@ r.retry((tries) => tries <= 3)
 r.retry((tries, err) => tries <= 3 && err.response.status === 500)
 ```
 
-You can also set a function that defined how long requester should wait
-between each unsuccessful try. By default, this is set to instant retries (`false`).
+You can also set a function that defines how long the module should wait
+between each unsuccessful try. By default this is set to instant retries.
 
 ```js
-// Wait a static 100ms between each failed request
+// Don't wait between failed tries
+r.retryWait(() => false)
+
+// Wait a static 100ms between each failed try
 r.retryWait(() => 100)
 
 // Wait based on the number of failed tries

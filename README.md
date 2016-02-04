@@ -131,7 +131,7 @@ console.log(r.requestStatistics)
 ## Mocking
 
 If you want to mock requester in your tests, you can replace it with
-the included mock module, e.g. using [rewire](https://github.com/jhnns/rewire) (or write your own!).
+the included basic mock module, e.g. using [rewire](https://github.com/jhnns/rewire).
 
 ```js
 let rewire = require('rewire')

@@ -77,7 +77,7 @@ let options = {
 await r.single('http://...', options)
 ```
 
-### Retry decider
+### Retrying
 
 You can set a custom function that gets the current number of tries as well as
 the last error object to decide if the request should be retried. With the default settings,
@@ -93,6 +93,17 @@ r.retry((tries) => tries <= 3)
 // Try to get the answer a total of three times if the
 // status code equals to "Internal Server Error"
 r.retry((tries, err) => tries <= 3 && err.response.status === 500)
+```
+
+You can also set a function that defined how long requester should wait
+between each unsuccessful try. By default, this is set to instant retries (`false`).
+
+```js
+// Wait a static 100ms between each failed request
+r.retryWait(() => 100)
+
+// Wait based on the number of failed tries
+r.retryWait(tries => tries * 100)
 ```
 
 ### Request statistics

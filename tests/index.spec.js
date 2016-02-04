@@ -402,4 +402,25 @@ describe('retrying', () => {
     expect(deciderArguments[1].response).to.exist
     expect(deciderArguments[1].response.status).to.equal(500)
   })
+
+  it('can specify a wait function for retrying', async () => {
+    module.retry(() => true)
+    module.retryWait(tries => tries * 100)
+    let tries = 0
+
+    mockResponses([
+      ['^http', function () {
+        tries++
+        if (tries === 4) {
+          return 'text'
+        }
+        return 500
+      }]
+    ])
+
+    let start = new Date()
+    await module.single('http://test.com/test', {type: 'text'})
+    expect(tries).to.equal(4)
+    expect(new Date() - start).to.be.above(100 + 200 + 300)
+  })
 })

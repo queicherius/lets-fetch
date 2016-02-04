@@ -10,6 +10,7 @@ const defaultOptions = {
 }
 
 let retryDecider = () => false
+let retrySleep = () => false
 
 let requestStatistics = {}
 let generateStatistics = false
@@ -18,6 +19,12 @@ let generateStatistics = false
 // based on the number of tries and the previous error
 function retry (decider) {
   retryDecider = decider
+}
+
+// Set a custom function that sets how long we should
+// sleep between each failed request
+function retryWait (callback) {
+  retrySleep = callback
 }
 
 // Toggle generating statistics
@@ -35,6 +42,9 @@ async function single (url, options = {}) {
       return await request(url, options)
     } catch (e) {
       err = e
+      if (retrySleep(tries)) {
+        await sleep(retrySleep(tries))
+      }
       tries += 1
     }
   }
@@ -132,4 +142,4 @@ function sleep (delay) {
   })
 }
 
-module.exports = {retry, statistics, requestStatistics, single, many}
+module.exports = {retry, retryWait, statistics, requestStatistics, single, many}

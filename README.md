@@ -71,7 +71,11 @@ let options = {
   
   // wait time in between requests (only for "many")
   // as soon as this is set, requests will be sent sequential instead of parallel
-  waitTime: undefined
+  waitTime: undefined,
+  
+  // request/response timeout in ms, 0 to disable 
+  // (!) only available in node.js environments
+  timeout: 0
 }
 
 await r.single('http://...', options)

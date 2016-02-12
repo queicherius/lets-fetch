@@ -1,6 +1,6 @@
 require('babel-polyfill')
 const fetch = require('node-fetch')
-const async = require('async')
+const async = require('async-promises')
 
 const defaultOptions = {
   type: 'json',
@@ -98,41 +98,20 @@ async function request (url, options) {
 
 // Request multiple pages
 async function many (urls, options = {}) {
-  return new Promise((resolve, reject) => {
-    let calls = []
+  let asyncMethod = (options.waitTime) ? async.series : async.parallel
 
-    // Map over the calls and build the callbacks that async requires
-    urls.map(url => {
-      calls.push(async (callback) => {
-        try {
-          let content = await single(url, options)
-          if (options.waitTime) {
-            await sleep(options.waitTime)
-          }
-          callback(null, content)
-        } catch (err) {
-          callback(err)
-        }
-      })
-    })
-
-    // Function to resolve the promise when all calls are done
-    let done = (err, results) => {
-      if (err) {
-        return reject(err)
+  // Map over the calls and convert them into promise returning functions
+  let promises = urls.map(url =>
+    async () => {
+      let content = await single(url, options)
+      if (options.waitTime) {
+        await sleep(options.waitTime)
       }
-      resolve(results)
+      return content
     }
+  )
 
-    // Send all requests at the same time and resolve when we are done
-    if (!options.waitTime) {
-      async.parallel(calls, done)
-      return
-    }
-
-    // We have a wait time set between each call, so we call in series
-    async.series(calls, done)
-  })
+  return asyncMethod(promises)
 }
 
 // Sleeps an amount of milliseconds

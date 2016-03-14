@@ -1,6 +1,6 @@
 {
   "name": "gw2e-requester",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Single and parallel requests in a simple interface.",
   "main": "./build/index.js",
   "scripts": {

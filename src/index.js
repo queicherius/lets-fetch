@@ -1,6 +1,6 @@
 require('babel-polyfill')
-const fetch = require('node-fetch')
-const async = require('async-promises')
+const fetch = require('isomorphic-fetch')
+const async = require('gw2e-async-promises')
 
 const defaultOptions = {
   type: 'json',

@@ -2,7 +2,7 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
 const rewire = require('rewire')
-const fetch = require('node-fetch')
+const fetch = require('isomorphic-fetch')
 const fetchMock = require('fetch-mock')
 
 const module = rewire('../src/index.js')

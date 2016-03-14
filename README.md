@@ -5,24 +5,18 @@
 
 > Single and parallel requests with retrying in a simple interface.
 
-**:bomb: NOTE: This module is still heavily in development and the API might change completely. Please don't use it yet.**
-
 ## Install
 
 ```
-npm install https://github.com/gw2efficiency/requester
+npm install gw2e-requester
 ```
 
 This module can be used for Node.js as well as browsers using [Browserify](https://github.com/substack/browserify-handbook#how-node_modules-works).
 
-(Note: Babel gets pulled in as a dependency, because the module is written in ES7 and 
-gets compiled into ES5 during the installation. The Babel code is **not** included in the module, 
-don't be shocked at the dependency tree. :wink:)
-
 ## Usage
 
 ```js
-const r = require('requester')
+const r = require('gw2e-requester')
 
 // ES7
 async function myFunction () {
@@ -139,9 +133,10 @@ the included basic mock module, e.g. using [rewire](https://github.com/jhnns/rew
 
 ```js
 let rewire = require('rewire')
-let requesterMock = require('requester/mock')
+let requesterMock = require('gw2e-requester/mock')
 let testingModule = rewire('./test.js')
 
+// Overwrite the "requester" variable in the rewired module
 testingModule.__set__('requester', requesterMock)
 
 // Add a response (e.g. json or a string). This is based on a "stack" system,

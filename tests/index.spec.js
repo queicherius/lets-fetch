@@ -132,8 +132,8 @@ describe('waiting', () => {
     )
 
     timestamps = timestamps.map(x => x.time)
-    expect(timestamps[1] - timestamps[0]).to.be.above(100)
-    expect(timestamps[2] - timestamps[1]).to.be.above(100)
+    expect(timestamps[1] - timestamps[0]).to.be.above(99)
+    expect(timestamps[2] - timestamps[1]).to.be.above(99)
   })
 })
 
@@ -421,6 +421,6 @@ describe('retrying', () => {
     let start = new Date()
     await module.single('http://test.com/test', {type: 'text'})
     expect(tries).to.equal(4)
-    expect(new Date() - start).to.be.above(100 + 200 + 300)
+    expect(new Date() - start).to.be.above(99 + 200 + 300)
   })
 })

@@ -106,7 +106,7 @@ describe('waiting', () => {
   it('waits when using the sleep method', async () => {
     let start = new Date()
     await module.__get__('sleep')(100)
-    expect(new Date() - start).to.be.above(100)
+    expect(new Date() - start).to.be.above(99)
   })
 
   it('uses parallel calls if no wait time is specified', async () => {

@@ -15,7 +15,6 @@
     "url": "https://github.com/gw2efficiency/requester"
   },
   "dependencies": {
-    "babel-polyfill": "^6.8.0",
     "gw2e-async-promises": "^1.0.0",
     "isomorphic-fetch": "^2.2.1"
   },

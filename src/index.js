@@ -1,4 +1,3 @@
-require('babel-polyfill')
 const fetch = require('isomorphic-fetch')
 const async = require('gw2e-async-promises')
 

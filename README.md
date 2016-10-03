@@ -20,9 +20,9 @@ This module can be used for Node.js as well as browsers using [Browserify](https
 ## Usage
 
 ```js
-const r = require('gw2e-requester')
+import r from 'gw2e-requester'
 
-// ES7
+// Async / await
 async function myFunction () {
   // Get a single url
   let json = await r.single('http://...')
@@ -112,36 +112,17 @@ r.retryWait(() => 100)
 r.retryWait(tries => tries * 100)
 ```
 
-### Request statistics
-
-You can easily enable statistics about the hit urls, amount of requests and request times in milliseconds.
-
-```js
-r.statistics(true)
-
-// Execute some requests
-await r.single('http://url.com')
-await r.single('http://url.com')
-await r.single('http://url.com')
-
-// Holds all requested urls as keys and an array
-// of milliseconds that correspond to each request
-console.log(r.requestStatistics)
-// -> {'http://url.com': [ 11, 444, 11 ], /* ... */}
-```
-
 ## Mocking
 
 If you want to mock requester in your tests, you can replace it with
-the included basic mock module, e.g. using [rewire](https://github.com/jhnns/rewire).
+the included basic mock module, e.g. using [rewire](https://github.com/speedskater/babel-plugin-rewire).
 
 ```js
-let rewire = require('rewire')
-let requesterMock = require('gw2e-requester/mock')
-let testingModule = rewire('./test.js')
+import requesterMock from 'gw2e-requester/mock'
+import myModule from './test.js'
 
-// Overwrite the "requester" variable in the rewired module
-testingModule.__set__('requester', requesterMock)
+// Overwrite the "requester" variable in the module to test
+myModule.__set__('requester', requesterMock)
 
 // Add a response (e.g. json or a string). This is based on a "stack" system,
 // every response will only get output once. "single" will output the first 

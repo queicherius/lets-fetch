@@ -1,12 +1,8 @@
 /* eslint-env node, mocha */
-const expect = require('chai').expect
-const sinon = require('sinon')
-const rewire = require('rewire')
-const fetch = require('isomorphic-fetch')
-const fetchMock = require('fetch-mock')
-
-const module = rewire('../src/index.js')
-fetchMock.useNonGlobalFetch(fetch)
+import {expect} from 'chai'
+import sinon from 'sinon'
+import fetchMock from 'fetch-mock'
+import module from '../src/index.js'
 
 beforeEach(() => {
   fetchMock.restore()
@@ -17,7 +13,7 @@ function mockResponses (array) {
     fetchMock.mock.apply(fetchMock, args)
   })
 
-  module.__set__('fetch', fetchMock.getMock())
+  module.__set__('fetch', fetchMock.fetchMock)
 }
 
 describe('requesting', () => {
@@ -167,44 +163,6 @@ describe('underlying fetch api', () => {
     let content = await module.single('http://test.com/test', options)
     expect(content).to.deep.equal('<h1>Foo</h1>')
     expect(fetchMock.lastOptions()).to.deep.equal(options)
-  })
-})
-
-describe('request statistics', () => {
-  it('doesn\'t generate statistics by default', async () => {
-    mockResponses([['http://test.com/test', {foo: 'bar'}]])
-    await module.single('http://test.com/test')
-    await module.single('http://test.com/test')
-
-    expect(module.requestStatistics).to.deep.equal({})
-  })
-
-  it('can generate statistics about requests', async () => {
-    module.statistics(true)
-
-    mockResponses([
-      ['http://test.com/test', {foo: 'bar'}],
-      ['http://test.com/test2', {foo: 'bar'}]
-    ])
-    await module.single('http://test.com/test')
-    await module.single('http://test.com/test')
-    await module.single('http://test.com/test2')
-
-    expect(Object.keys(module.requestStatistics)).to.deep.equal([
-      'http://test.com/test', 'http://test.com/test2'
-    ])
-    expect(module.requestStatistics['http://test.com/test'].length).to.equal(2)
-  })
-
-  it('can disable statistics', async () => {
-    module.statistics(false)
-    module.requestStatistics = {}
-
-    mockResponses([['http://test.com/test', {foo: 'bar'}]])
-    await module.single('http://test.com/test')
-    await module.single('http://test.com/test')
-
-    expect(module.requestStatistics).to.deep.equal({})
   })
 })
 

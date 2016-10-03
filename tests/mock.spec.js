@@ -1,6 +1,6 @@
 /* eslint-env node, mocha */
-const expect = require('chai').expect
-const module = require('../src/mock.js')
+import {expect} from 'chai'
+import module from '../src/mock.js'
 
 describe('mock', () => {
   it('can add a response', async () => {
@@ -56,14 +56,14 @@ describe('mock', () => {
     module.enableMocking(false)
 
     try {
-      await module.single('some/url')
+      await module.single('real/single/url')
     } catch (e) {
       err = e
     }
 
     expect(err).to.exist
     expect(err).to.instanceOf(Error)
-    expect(module.lastUrl()).to.equal('some/url')
+    expect(module.lastUrl()).to.equal('real/single/url')
   })
 
   it('can enable the real module (many)', async () => {
@@ -73,14 +73,14 @@ describe('mock', () => {
     module.enableMocking(false)
 
     try {
-      await module.many(['some/url'])
+      await module.many(['real/many/url'])
     } catch (e) {
       err = e
     }
 
     expect(err).to.exist
     expect(err).to.instanceOf(Error)
-    expect(module.lastUrl()).to.equal('some/url')
+    expect(module.lastUrl()).to.equal('real/many/url')
   })
 
   it('can disable the real module again', async () => {

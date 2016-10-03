@@ -1,5 +1,5 @@
-const fetch = require('isomorphic-fetch')
-const async = require('gw2e-async-promises')
+import fetch from 'isomorphic-fetch'
+import async from 'gw2e-async-promises'
 
 const defaultOptions = {
   type: 'json',
@@ -11,28 +11,22 @@ const defaultOptions = {
 let retryDecider = () => false
 let retrySleep = () => false
 
-let requestStatistics = {}
-let generateStatistics = false
+export default {retry, retryWait, single, many}
 
 // Set a custom decider function that decides to retry
 // based on the number of tries and the previous error
-function retry (decider) {
+export function retry (decider) {
   retryDecider = decider
 }
 
 // Set a custom function that sets how long we should
 // sleep between each failed request
-function retryWait (callback) {
+export function retryWait (callback) {
   retrySleep = callback
 }
 
-// Toggle generating statistics
-function statistics (bool) {
-  generateStatistics = bool
-}
-
 // Request a single url
-async function single (url, options = {}) {
+export async function single (url, options = {}) {
   let tries = 1
   let err
 
@@ -52,21 +46,13 @@ async function single (url, options = {}) {
 }
 
 // Send a request using the underlying fetch API
-async function request (url, options) {
+export async function request (url, options) {
   options = {...defaultOptions, ...options}
 
   try {
-    var response
+    var response = await fetch(url, options)
     var content
     var decodingException
-
-    if (!generateStatistics) {
-      response = await fetch(url, options)
-    } else {
-      let start = new Date()
-      response = await fetch(url, options)
-      requestStatistics[url] = (requestStatistics[url] || []).concat(new Date() - start)
-    }
 
     if (options.type === 'response') {
       content = response
@@ -96,7 +82,7 @@ async function request (url, options) {
 }
 
 // Request multiple pages
-async function many (urls, options = {}) {
+export async function many (urls, options = {}) {
   let asyncMethod = (options.waitTime) ? async.series : async.parallel
 
   // Map over the calls and convert them into promise returning functions
@@ -114,10 +100,8 @@ async function many (urls, options = {}) {
 }
 
 // Sleeps an amount of milliseconds
-function sleep (delay) {
+export function sleep (delay) {
   return new Promise(resolve => {
     setTimeout(resolve, delay)
   })
 }
-
-module.exports = {retry, retryWait, statistics, requestStatistics, single, many}

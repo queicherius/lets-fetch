@@ -259,35 +259,24 @@ describe('error handling', () => {
 describe('retrying', () => {
   it('retries on error till success', async () => {
     module.retry(() => true)
-    let tries = 0
 
     mockResponses([
-      ['http://test.com/test', function () {
-        tries++
-        if (tries === 4) {
-          return 'text'
-        }
-        return 500
-      }]
+      ['http://test.com/test', 500, {times: 3}],
+      ['http://test.com/test', 'text', {times: 1}],
+      ['http://test.com/test', 'not text']
     ])
 
     let content = await module.single('http://test.com/test', {type: 'text'})
     expect(content).to.deep.equal('text')
-    expect(tries).to.equal(4)
   })
 
   it('respects the decider response', async () => {
     module.retry((tries) => tries <= 3)
-    let tries = 0
 
     mockResponses([
-      ['http://test.com/test', function () {
-        tries++
-        if (tries === 3) {
-          return 'text'
-        }
-        return 500
-      }]
+      ['http://test.com/test', 500, {times: 3}],
+      ['http://test.com/test', 'text', {times: 1}],
+      ['http://test.com/test', 'not text']
     ])
 
     try {
@@ -297,21 +286,15 @@ describe('retrying', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
-    expect(tries).to.equal(3)
   })
 
   it('can disable retrying', async () => {
     module.retry(() => false)
-    let tries = 0
 
     mockResponses([
-      ['http://test.com/test', function () {
-        tries++
-        if (tries === 2) {
-          return 'text'
-        }
-        return 500
-      }]
+      ['http://test.com/test', 500, {times: 1}],
+      ['http://test.com/test', 'text', {times: 1}],
+      ['http://test.com/test', 'not text']
     ])
 
     try {
@@ -321,22 +304,16 @@ describe('retrying', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
-    expect(tries).to.equal(1)
   })
 
   it('can access the error object and the retries in the retry decider', async () => {
     let callback = sinon.spy()
     module.retry(callback)
-    let tries = 0
 
     mockResponses([
-      ['http://test.com/test', function () {
-        tries++
-        if (tries === 2) {
-          return 'text'
-        }
-        return 500
-      }]
+      ['http://test.com/test', 500, {times: 1}],
+      ['http://test.com/test', 'text', {times: 1}],
+      ['http://test.com/test', 'not text']
     ])
 
     try {
@@ -346,7 +323,6 @@ describe('retrying', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
-    expect(tries).to.equal(1)
 
     let deciderArguments = callback.args[0]
     expect(deciderArguments[0]).to.equal(2)
@@ -358,21 +334,15 @@ describe('retrying', () => {
   it('can specify a wait function for retrying', async () => {
     module.retry(() => true)
     module.retryWait(tries => tries * 100)
-    let tries = 0
 
     mockResponses([
-      ['^http', function () {
-        tries++
-        if (tries === 4) {
-          return 'text'
-        }
-        return 500
-      }]
+      ['http://test.com/test', 500, {times: 4}],
+      ['http://test.com/test', 'text', {times: 1}],
+      ['http://test.com/test', 'not text']
     ])
 
     let start = new Date()
     await module.single('http://test.com/test', {type: 'text'})
-    expect(tries).to.equal(4)
-    expect(new Date() - start).to.be.above(99 + 200 + 300)
+    expect(new Date() - start).to.be.above(99 * (1 + 2 + 3 + 4))
   })
 })

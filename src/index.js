@@ -8,100 +8,113 @@ const defaultOptions = {
   body: null
 }
 
-let retryDecider = () => false
-let retrySleep = () => false
+let internalRetry = () => false
+let internalRetryWait = () => false
 
 export default {retry, retryWait, single, many}
 
 // Set a custom decider function that decides to retry
 // based on the number of tries and the previous error
 export function retry (decider) {
-  retryDecider = decider
+  internalRetry = decider
 }
 
 // Set a custom function that sets how long we should
 // sleep between each failed request
 export function retryWait (callback) {
-  retrySleep = callback
+  internalRetryWait = callback
 }
 
 // Request a single url
-export async function single (url, options = {}) {
+export function single (url, options = {}) {
   let tries = 1
-  let err
 
-  while (tries === 1 || retryDecider(tries, err)) {
-    try {
-      return await request(url, options)
-    } catch (e) {
-      err = e
-      if (retrySleep(tries)) {
-        await sleep(retrySleep(tries))
-      }
-      tries += 1
+  // Execute the request and retry if there are errors (and the
+  // retry decider decided that we should try our luck again)
+  const callRequest = () => request(url, options).catch(err => {
+    if (internalRetry(++tries, err)) {
+      return wait(callRequest, internalRetryWait(tries))
     }
-  }
 
-  throw err
+    throw err
+  })
+
+  return callRequest()
 }
 
 // Send a request using the underlying fetch API
-export async function request (url, options) {
+export function request (url, options) {
   options = {...defaultOptions, ...options}
+  let savedContent
+  let savedResponse
 
-  try {
-    var response = await fetch(url, options)
-    var content
-    var decodingException
+  return new Promise((resolve, reject) => {
+    fetch(url, options)
+      .then(handleResponse)
+      .then(handleBody)
+      .catch(handleError)
 
-    if (options.type === 'response') {
-      content = response
-    } else {
-      try {
-        content = options.type === 'json' ? await response.json() : await response.text()
-      } catch (e) {
-        decodingException = e
+    function handleResponse (response) {
+      // Save the response for checking the status later
+      savedResponse = response
+
+      // Decode the response body
+      switch (options.type) {
+        case 'response':
+          return response
+        case 'json':
+          return response.json()
+        default:
+          return response.text()
       }
     }
 
-    if (response.status >= 400) {
-      throw new Error(`Status ${response.status}`)
+    function handleBody (content) {
+      // Bubble an error if the response status is not okay
+      if (savedResponse.status >= 400) {
+        savedContent = content
+        throw new Error(`Response status indicates error`)
+      }
+
+      // All is well!
+      resolve(content)
     }
 
-    if (decodingException) {
-      throw decodingException
-    }
+    function handleError (err) {
+      // Overwrite potential decoding errors when the actual problem was the response
+      if (savedResponse.status >= 400) {
+        err = new Error(`Status ${savedResponse.status}`)
+      }
 
-    return content
-  } catch (err) {
-    let error = new Error(err.message)
-    error.response = response
-    error.content = content
-    throw error
-  }
+      // Enrich the error message with the response and the content
+      let error = new Error(err.message)
+      error.response = savedResponse
+      error.content = savedContent
+      reject(error)
+    }
+  })
 }
 
 // Request multiple pages
-export async function many (urls, options = {}) {
+export function many (urls, options = {}) {
   let asyncMethod = (options.waitTime) ? async.series : async.parallel
 
-  // Map over the calls and convert them into promise returning functions
-  let promises = urls.map(url =>
-    async () => {
-      let content = await single(url, options)
-      if (options.waitTime) {
-        await sleep(options.waitTime)
-      }
-      return content
-    }
-  )
+  // Call the single method while respecting the wait time in between tasks
+  const callSingle = (url) => single(url, options)
+    .then(content => wait(() => content, options.waitTime))
 
+  // Map over the urls and call them using the method the user chose
+  let promises = urls.map(url => () => callSingle(url))
   return asyncMethod(promises)
 }
 
-// Sleeps an amount of milliseconds
-export function sleep (delay) {
+// Wait a specific time before executing a callback
+function wait (callback, ms) {
   return new Promise(resolve => {
-    setTimeout(resolve, delay)
+    if (!ms) {
+      return resolve(callback())
+    }
+
+    setTimeout(() => resolve(callback()), ms)
   })
 }

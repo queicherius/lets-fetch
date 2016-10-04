@@ -1,4 +1,5 @@
 import requester from './index.js'
+import async from 'gw2e-async-promises'
 
 let reqResponses = []
 let reqOptions = []
@@ -48,27 +49,26 @@ export function enableMocking (bool) {
   mockingEnabled = bool
 }
 
-export async function single (url, opt) {
+export function single (url, opt) {
   reqUrls.push(url)
   reqOptions.push(opt)
 
   if (!mockingEnabled) {
-    return await requester.single(url, opt)
+    return requester.single(url, opt)
   }
 
-  return reqResponses.shift()
+  return new Promise((resolve) => {
+    resolve(reqResponses.shift())
+  })
 }
 
-export async function many (url, opt) {
+export function many (urls, opt) {
   if (!mockingEnabled) {
-    reqUrls = reqUrls.concat(url)
+    reqUrls = reqUrls.concat(urls)
     reqOptions = reqOptions.concat(opt)
-    return await requester.many(url, opt)
+    return requester.many(urls, opt)
   }
 
-  let requests = []
-  for (let i in url) {
-    requests = requests.concat(await single(url[i], opt))
-  }
-  return requests
+  let requests = urls.map(url => () => single(url, opt))
+  return async.parallel(requests)
 }

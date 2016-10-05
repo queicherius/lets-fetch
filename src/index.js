@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import async from 'gw2e-async-promises'
+import flow from 'promise-flowcontrol'
 
 const defaultOptions = {
   type: 'json',
@@ -97,7 +97,7 @@ export function request (url, options) {
 
 // Request multiple pages
 export function many (urls, options = {}) {
-  let asyncMethod = (options.waitTime) ? async.series : async.parallel
+  let flowMethod = (options.waitTime) ? flow.series : flow.parallel
 
   // Call the single method while respecting the wait time in between tasks
   const callSingle = (url) => single(url, options)
@@ -105,7 +105,7 @@ export function many (urls, options = {}) {
 
   // Map over the urls and call them using the method the user chose
   let promises = urls.map(url => () => callSingle(url))
-  return asyncMethod(promises)
+  return flowMethod(promises)
 }
 
 // Wait a specific time before executing a callback

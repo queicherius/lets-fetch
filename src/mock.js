@@ -1,5 +1,5 @@
-import requester from './index.js'
-import async from 'gw2e-async-promises'
+import fetch from './index.js'
+import flow from 'promise-flowcontrol'
 
 let reqResponses = []
 let reqOptions = []
@@ -26,7 +26,7 @@ export function reset () {
   reqResponses = []
   reqOptions = []
   reqUrls = []
-  requester.retry(() => false)
+  fetch.retry(() => false)
 }
 
 export function urls () {
@@ -54,7 +54,7 @@ export function single (url, opt) {
   reqOptions.push(opt)
 
   if (!mockingEnabled) {
-    return requester.single(url, opt)
+    return fetch.single(url, opt)
   }
 
   return new Promise((resolve) => {
@@ -66,9 +66,9 @@ export function many (urls, opt) {
   if (!mockingEnabled) {
     reqUrls = reqUrls.concat(urls)
     reqOptions = reqOptions.concat(opt)
-    return requester.many(urls, opt)
+    return fetch.many(urls, opt)
   }
 
   let requests = urls.map(url => () => single(url, opt))
-  return async.parallel(requests)
+  return flow.parallel(requests)
 }

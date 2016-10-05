@@ -1,7 +1,7 @@
 {
-  "name": "gw2e-requester",
+  "name": "lets-fetch",
   "version": "1.0.1",
-  "description": "Single and parallel requests in a simple interface.",
+  "description": "Single and parallel requests with retrying and error handling.",
   "main": "./build/index.js",
   "scripts": {
     "prepublish": "npm run build",
@@ -12,11 +12,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gw2efficiency/requester"
+    "url": "https://github.com/queicherius/lets-fetch"
   },
   "dependencies": {
-    "gw2e-async-promises": "^1.0.0",
-    "isomorphic-fetch": "^2.2.1"
+    "isomorphic-fetch": "^2.2.1",
+    "promise-flowcontrol": "^1.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

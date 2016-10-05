@@ -1,16 +1,14 @@
-# requester
+# lets-fetch
 
-[![Build Status](https://img.shields.io/travis/gw2efficiency/requester.svg?style=flat-square)](https://travis-ci.org/gw2efficiency/requester)
-[![Coverage Status](https://img.shields.io/codecov/c/github/gw2efficiency/requester/master.svg?style=flat-square)](https://codecov.io/github/gw2efficiency/requester)
+[![Build Status](https://img.shields.io/travis/queicherius/lets-fetch.svg?style=flat-square)](https://travis-ci.org/queicherius/lets-fetch)
+[![Coverage Status](https://img.shields.io/codecov/c/github/queicherius/lets-fetch/master.svg?style=flat-square)](https://codecov.io/github/queicherius/lets-fetch)
 
-> Single and parallel requests with retrying in a simple interface.
-
-*This is part of [gw2efficiency](https://gw2efficiency.com). Please report all issues in [the central repository](https://github.com/gw2efficiency/issues/issues).*
+> Single and parallel requests with retrying and error handling.
 
 ## Install
 
 ```
-npm install gw2e-requester
+npm install lets-fetch
 ```
 
 This module can be used for Node.js as well as browsers using [Browserify](https://github.com/substack/browserify-handbook#how-node_modules-works).
@@ -18,30 +16,30 @@ This module can be used for Node.js as well as browsers using [Browserify](https
 ## Usage
 
 ```js
-import r from 'gw2e-requester'
+import fetch from 'lets-fetch'
 
 // Async / await
 async function myFunction () {
   // Get a single url
-  let json = await r.single('http://...')
+  let json = await fetch.single('http://...')
   // -> {foo: bar}
 	
   // Get multiple urls
-  let json = await r.many(['http://...', 'http://...'])
+  let json = await fetch.many(['http://...', 'http://...'])
   // -> [{foo: bar}, {foobar: 1}]
 	
   // Error handling
   try {
-	let json = await r.single('http://...')
+	  let json = await fetch.single('http://...')
   } catch (err) {
-	// Something went wrong :(
-	// err.response is the last response object (e.g. err.response.status)
-	// err.content is the parsed body of the response, if available
+	  // Something went wrong :(
+	  // err.response is the last response object (so you can e.g. access err.response.status)
+	  // err.content is the parsed body of the response, if available
   }
 }
 
 // Promises
-r.single('http://...')
+fetch.single('http://...')
  .then(x => console.log('content:', x))
  .catch(e => console.log('error:', e))
 ```
@@ -53,7 +51,7 @@ The available options with their corresponding defaults are:
 
 ```js
 let options = {
-  // response type, can be "json", "text" or "response" (response object)
+  // response type, can be "json", "text" or "response"
   type: 'json',
   
   // request method to use
@@ -66,7 +64,7 @@ let options = {
   body: null,
   
   // wait time in between requests (only for "many")
-  // as soon as this is set, requests will be sent sequential instead of parallel
+  // as soon as this is set, requests will be sent in series instead of parallel
   waitTime: undefined,
   
   // request/response timeout in ms, 0 to disable 
@@ -74,79 +72,75 @@ let options = {
   timeout: 0
 }
 
-await r.single('http://...', options)
-await r.many(['http://...'], options)
+await fetch.single('http://...', options)
+await fetch.many(['http://...'], options)
 ```
 
 ### Retrying
 
-You can set a custom function that gets the current number of tries as well as
-the last error object to decide if the request should be retried. By default,
-retrying is **disabled**.
+You can set a custom function that gets the current number of tries as well as the last error object to decide if the request should be retried. By default, retrying is **disabled**.
 
 ```js
-// Retry until we get a valid answer
-r.retry(() => true)
+// Retry until we get a valid response
+fetch.retry(() => true)
 
-// Try to get the answer a total of three times
-r.retry((tries) => tries <= 3)
+// Try to get the response a total of three times
+fetch.retry((tries) => tries <= 3)
 
-// Try to get the answer a total of three times if the
+// Try to get the response a total of three times if the
 // status code equals to "Internal Server Error"
-r.retry((tries, err) => tries <= 3 && err.response.status === 500)
+fetch.retry((tries, err) => tries <= 3 && err.response.status === 500)
 ```
 
-You can also set a function that defines how long the module should wait
-between each unsuccessful try. By default this is set to instant retries.
+You can also set a function that defines how long the module should wait between each unsuccessful try. By default this is set to instant retries.
 
 ```js
 // Don't wait between failed tries
-r.retryWait(() => false)
+fetch.retryWait(() => false)
 
 // Wait a static 100ms between each failed try
-r.retryWait(() => 100)
+fetch.retryWait(() => 100)
 
 // Wait based on the number of failed tries
-r.retryWait(tries => tries * 100)
+fetch.retryWait(tries => tries * 100)
 ```
 
 ## Mocking
 
-If you want to mock requester in your tests, you can replace it with
-the included basic mock module, e.g. using [rewire](https://github.com/speedskater/babel-plugin-rewire).
+If you want to mock `lets-fetch` in your tests, you can replace it with the included basic mock module, e.g. using [rewire](https://github.com/speedskater/babel-plugin-rewire).
 
 ```js
-import requesterMock from 'gw2e-requester/mock'
+import mock from 'lets-fetch/mock'
 import myModule from './test.js'
 
-// Overwrite the "requester" variable in the module to test
-myModule.__set__('requester', requesterMock)
+// Overwrite the "fetch" variable in the module to test
+myModule.__set__('fetch', mock)
 
 // Add a response (e.g. json or a string). This is based on a "stack" system,
 // every response will only get output once. "single" will output the first 
 // response added, "many" will loop through multiple single calls.
 // "single" and "many" will still return promises and 
 // have to be handled appropriately in your tests (.then or await)
-requesterMock.addResponse({text: 'Everything fine!'})
+mock.addResponse({text: 'Everything fine!'})
 
 // Enable / disable mocking. When mocking is disabled the requests
 // get passed through to the real module and get send over the internet
-requesterMock.enableMocking(true)
+mock.enableMocking(true)
 
 // Reset all responses and collected requests
-requesterMock.reset()
+mock.reset()
 
 // Get all requested urls
-requesterMock.urls()
+mock.urls()
 
 // Get the url of the last request
-requesterMock.lastUrl()
+mock.lastUrl()
 
 // Get the requested options
-requesterMock.options()
+mock.options()
 
 // Get the options of the last request
-requesterMock.lastOptions()
+mock.lastOptions()
 ```
 
 ## Tests
@@ -158,3 +152,7 @@ npm test
 ## Licence
 
 MIT
+
+---
+
+Thanks to @pguth for the name idea. :+1:

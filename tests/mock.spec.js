@@ -2,6 +2,12 @@
 import {expect} from 'chai'
 import module from '../src/mock.js'
 
+module.__set__('fetch', {
+  single: async () => 'Some Content',
+  many: async () => ['Some Content'],
+  retry: () => false
+})
+
 describe('mock', () => {
   it('can add a response', async () => {
     module.addResponse({foo: 'bar'})
@@ -50,36 +56,22 @@ describe('mock', () => {
   })
 
   it('can enable the real module (single)', async () => {
-    let err
     module.reset()
     module.addResponse({foo: 'bar'})
     module.enableMocking(false)
 
-    try {
-      await module.single('real/single/url')
-    } catch (e) {
-      err = e
-    }
-
-    expect(err).to.exist
-    expect(err).to.instanceOf(Error)
+    let content = await module.single('real/single/url')
+    expect(content).to.deep.equal('Some Content')
     expect(module.lastUrl()).to.equal('real/single/url')
   })
 
   it('can enable the real module (many)', async () => {
-    let err
     module.reset()
     module.addResponse({foo: 'bar'})
     module.enableMocking(false)
 
-    try {
-      await module.many(['real/many/url'])
-    } catch (e) {
-      err = e
-    }
-
-    expect(err).to.exist
-    expect(err).to.instanceOf(Error)
+    let content = await module.many('real/many/url')
+    expect(content).to.deep.equal(['Some Content'])
     expect(module.lastUrl()).to.equal('real/many/url')
   })
 

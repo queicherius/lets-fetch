@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import flow from 'promise-flowcontrol'
+import flow from 'promise-control-flow'
 
 const defaultOptions = {
   type: 'json',

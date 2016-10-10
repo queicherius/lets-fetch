@@ -5,7 +5,7 @@ import module from '../src/mock.js'
 module.__set__('fetch', {
   single: async () => 'Some Content',
   many: async () => ['Some Content'],
-  retry: () => false
+  retry: (cb) => cb()
 })
 
 describe('mock', () => {

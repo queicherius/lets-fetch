@@ -1,5 +1,5 @@
 import fetch from './index.js'
-import flow from 'promise-flowcontrol'
+import flow from 'promise-control-flow'
 
 let reqResponses = []
 let reqOptions = []

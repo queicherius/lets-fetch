@@ -139,7 +139,7 @@ describe('underlying fetch api', () => {
       type: 'json',
       method: 'GET',
       headers: {},
-      body: null
+      body: undefined
     })
   })
 

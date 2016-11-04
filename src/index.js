@@ -5,7 +5,7 @@ const defaultOptions = {
   type: 'json',
   method: 'GET',
   headers: {},
-  body: null
+  body: undefined
 }
 
 let internalRetry = () => false
@@ -71,7 +71,7 @@ export function request (url, options) {
 
     function handleBody (content) {
       // Bubble an error if the response status is not okay
-      if (savedResponse.status >= 400) {
+      if (savedResponse && savedResponse.status >= 400) {
         savedContent = content
         throw new Error(`Response status indicates error`)
       }
@@ -82,7 +82,7 @@ export function request (url, options) {
 
     function handleError (err) {
       // Overwrite potential decoding errors when the actual problem was the response
-      if (savedResponse.status >= 400) {
+      if (savedResponse && savedResponse.status >= 400) {
         err = new Error(`Status ${savedResponse.status}`)
       }
 

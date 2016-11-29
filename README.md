@@ -123,6 +123,9 @@ myModule.__set__('fetch', mock)
 // have to be handled appropriately in your tests (.then or await)
 mock.addResponse({text: 'Everything fine!'})
 
+// Add a response error (response, content)
+mock.addResponseError({status: 500}, {text: 'Oh no.'})
+
 // Enable / disable mocking. When mocking is disabled the requests
 // get passed through to the real module and get send over the internet
 mock.enableMocking(true)

@@ -14,6 +14,22 @@ describe('mock', () => {
     expect(await module.single('some/url')).to.deep.equal({foo: 'bar'})
   })
 
+  it('can add a failing response', async () => {
+    module.addResponseError({status: 404}, {foo: 'bar'})
+    let error
+
+    try {
+      await module.single('some/url')
+    } catch (err) {
+      error = err
+    }
+
+    expect(error).to.be.an.instanceOf(Error)
+    expect(error.message).to.equal('Status 404')
+    expect(error.response).to.deep.equal({status: 404})
+    expect(error.content).to.deep.equal({foo: 'bar'})
+  })
+
   it('can add multiple responses', async () => {
     module.addResponse({foo: 'bar'})
     module.addResponse('string')

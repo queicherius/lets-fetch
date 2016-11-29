@@ -8,6 +8,7 @@ let mockingEnabled = true
 
 export default {
   addResponse,
+  addResponseError,
   reset,
   urls,
   options,
@@ -18,8 +19,16 @@ export default {
   many
 }
 
-export function addResponse (response) {
-  reqResponses.push(response)
+export function addResponse (content) {
+  reqResponses.push(content)
+}
+
+export function addResponseError (response, content) {
+  const responseError = new Error('Status ' + response.status)
+  responseError.response = response
+  responseError.content = content
+
+  reqResponses.push(responseError)
 }
 
 export function reset () {
@@ -57,8 +66,14 @@ export function single (url, opt) {
     return fetch.single(url, opt)
   }
 
-  return new Promise((resolve) => {
-    resolve(reqResponses.shift())
+  return new Promise((resolve, reject) => {
+    let response = reqResponses.shift()
+
+    if (response instanceof Error) {
+      return reject(response)
+    }
+
+    resolve(response)
   })
 }
 

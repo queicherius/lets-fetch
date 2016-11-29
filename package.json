@@ -1,6 +1,6 @@
 {
   "name": "lets-fetch",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Single and parallel requests with retrying and error handling.",
   "main": "./build/index.js",
   "scripts": {

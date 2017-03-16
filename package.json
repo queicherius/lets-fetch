@@ -19,7 +19,7 @@
     "promise-control-flow": "^1.2.3"
   },
   "devDependencies": {
-    "abc-environment": "^1.0.5",
+    "abc-environment": "^2.0.0",
     "fetch-mock": "^5.5.0"
   }
 }

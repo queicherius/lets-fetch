@@ -43,7 +43,7 @@ describe('requesting', () => {
     let content = await module.single('http://test.com/test', {type: 'response'})
     expect(content.url).to.equal('http://test.com/test')
     expect(content.status).to.equal(200)
-    expect(content.headers).to.exist
+    expect(content.headers).to.not.equal(undefined)
   })
 
   it('requests multiple urls as json', async () => {
@@ -94,14 +94,14 @@ describe('requesting', () => {
     ], {type: 'response'})
     expect(content[0].url).to.equal('http://test.com/test')
     expect(content[0].status).to.equal(200)
-    expect(content[0].headers).to.exist
+    expect(content[0].headers).to.not.equal(undefined)
   })
 })
 
 describe('waiting', () => {
   it('uses parallel calls if no wait time is specified', async () => {
     mockResponses([
-      ['^http', () => ({time: new Date().getTime()})]
+      ['begin:http', () => ({time: new Date().getTime()})]
     ])
 
     let timestamps = await module.many(['http://1.com', 'http://2.com', 'http://3.com'])
@@ -113,7 +113,7 @@ describe('waiting', () => {
 
   it('uses sequential calls and waits if a wait time is specified', async () => {
     mockResponses([
-      ['^http', () => ({time: new Date().getTime()})]
+      ['begin:http', () => ({time: new Date().getTime()})]
     ])
 
     let timestamps = await module.many(
@@ -249,7 +249,7 @@ describe('error handling', () => {
     }
 
     expect(err).to.exist.and.be.instanceof(Error)
-    expect(err.response).to.be.an.object
+    expect(typeof err.response).to.equal('object')
     expect(err.message).to.equal('Status 403')
     expect(err.response.status).to.equal(403)
     expect(err.content).to.deep.equal({text: 'authentication required'})
@@ -327,7 +327,7 @@ describe('retrying', () => {
     let deciderArguments = callback.args[0]
     expect(deciderArguments[0]).to.equal(2)
     expect(deciderArguments[1]).to.exist.and.be.instanceof(Error)
-    expect(deciderArguments[1].response).to.exist
+    expect(deciderArguments[1].response).to.not.equal(undefined)
     expect(deciderArguments[1].response.status).to.equal(500)
   })
 

@@ -20,6 +20,6 @@
   },
   "devDependencies": {
     "abc-environment": "^2.0.0",
-    "fetch-mock": "^5.5.0"
+    "fetch-mock": "^6.0.0"
   }
 }

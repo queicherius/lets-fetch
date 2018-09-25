@@ -1,8 +1,7 @@
-/* eslint-env node, mocha */
-import {expect} from 'chai'
-import module from '../src/mock.js'
+/* eslint-env jest */
+const mock = require('../src/mock.js')
 
-module.__set__('fetch', {
+mock.__set__('fetch', {
   single: async () => 'Some Content',
   many: async () => ['Some Content'],
   retry: (cb) => cb()
@@ -10,94 +9,94 @@ module.__set__('fetch', {
 
 describe('mock', () => {
   it('can add a response', async () => {
-    module.addResponse({foo: 'bar'})
-    expect(await module.single('some/url')).to.deep.equal({foo: 'bar'})
+    mock.addResponse({ foo: 'bar' })
+    expect(await mock.single('some/url')).toEqual({ foo: 'bar' })
   })
 
   it('can add a failing response', async () => {
-    module.addResponseError({status: 404}, {foo: 'bar'})
+    mock.addResponseError({ status: 404 }, { foo: 'bar' })
     let error
 
     try {
-      await module.single('some/url')
+      await mock.single('some/url')
     } catch (err) {
       error = err
     }
 
-    expect(error).to.be.an.instanceOf(Error)
-    expect(error.message).to.equal('Status 404')
-    expect(error.response).to.deep.equal({status: 404})
-    expect(error.content).to.deep.equal({foo: 'bar'})
+    expect(error).toBeInstanceOf(Error)
+    expect(error.message).toEqual('Status 404')
+    expect(error.response).toEqual({ status: 404 })
+    expect(error.content).toEqual({ foo: 'bar' })
   })
 
   it('can add multiple responses', async () => {
-    module.addResponse({foo: 'bar'})
-    module.addResponse('string')
-    expect(await module.single('some/url')).to.deep.equal({foo: 'bar'})
-    expect(await module.single('some/url')).to.deep.equal('string')
+    mock.addResponse({ foo: 'bar' })
+    mock.addResponse('string')
+    expect(await mock.single('some/url')).toEqual({ foo: 'bar' })
+    expect(await mock.single('some/url')).toEqual('string')
   })
 
   it('can use "many" for multiple responses', async () => {
-    module.addResponse({foo: 'bar'})
-    module.addResponse('string')
-    let x = await module.many(['some/url', 'some/url'])
-    expect(x).to.deep.equal([{foo: 'bar'}, 'string'])
+    mock.addResponse({ foo: 'bar' })
+    mock.addResponse('string')
+    let x = await mock.many(['some/url', 'some/url'])
+    expect(x).toEqual([{ foo: 'bar' }, 'string'])
   })
 
   it('can reset and get the request urls', async () => {
-    module.reset()
-    module.addResponse({foo: 'bar'})
+    mock.reset()
+    mock.addResponse({ foo: 'bar' })
 
-    await module.single('some/url')
-    expect(module.urls()).to.deep.equal(['some/url'])
-    expect(module.lastUrl()).to.equal('some/url')
+    await mock.single('some/url')
+    expect(mock.urls()).toEqual(['some/url'])
+    expect(mock.lastUrl()).toEqual('some/url')
   })
 
   it('can reset and get the request options', async () => {
-    module.reset()
-    module.addResponse({foo: 'bar'})
-    let options = {type: 'text', headers: {Authenticate: 'Token'}}
+    mock.reset()
+    mock.addResponse({ foo: 'bar' })
+    let options = { type: 'text', headers: { Authenticate: 'Token' } }
 
-    await module.single('some/url', options)
-    expect(module.options()).to.deep.equal([options])
-    expect(module.lastOption()).to.equal(options)
+    await mock.single('some/url', options)
+    expect(mock.options()).toEqual([options])
+    expect(mock.lastOption()).toEqual(options)
   })
 
   it('can reset the responses', async () => {
-    module.addResponse({foo: 'bar'})
-    module.reset()
+    mock.addResponse({ foo: 'bar' })
+    mock.reset()
 
-    let x = await module.single('some/url')
-    expect(x).to.equal(undefined)
+    let x = await mock.single('some/url')
+    expect(x).toEqual(undefined)
   })
 
   it('can enable the real module (single)', async () => {
-    module.reset()
-    module.addResponse({foo: 'bar'})
-    module.enableMocking(false)
+    mock.reset()
+    mock.addResponse({ foo: 'bar' })
+    mock.enableMocking(false)
 
-    let content = await module.single('real/single/url')
-    expect(content).to.deep.equal('Some Content')
-    expect(module.lastUrl()).to.equal('real/single/url')
+    let content = await mock.single('real/single/url')
+    expect(content).toEqual('Some Content')
+    expect(mock.lastUrl()).toEqual('real/single/url')
   })
 
   it('can enable the real module (many)', async () => {
-    module.reset()
-    module.addResponse({foo: 'bar'})
-    module.enableMocking(false)
+    mock.reset()
+    mock.addResponse({ foo: 'bar' })
+    mock.enableMocking(false)
 
-    let content = await module.many('real/many/url')
-    expect(content).to.deep.equal(['Some Content'])
-    expect(module.lastUrl()).to.equal('real/many/url')
+    let content = await mock.many('real/many/url')
+    expect(content).toEqual(['Some Content'])
+    expect(mock.lastUrl()).toEqual('real/many/url')
   })
 
   it('can disable the real module again', async () => {
-    module.reset()
-    module.enableMocking(false)
-    module.addResponse({foo: 'bar'})
-    module.enableMocking(true)
+    mock.reset()
+    mock.enableMocking(false)
+    mock.addResponse({ foo: 'bar' })
+    mock.enableMocking(true)
 
-    let x = await module.single('some/url')
-    expect(x).to.deep.equal({foo: 'bar'})
+    let x = await mock.single('some/url')
+    expect(x).toEqual({ foo: 'bar' })
   })
 })

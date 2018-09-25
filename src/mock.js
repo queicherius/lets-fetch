@@ -1,12 +1,12 @@
-import fetch from './index.js'
-import flow from 'promise-control-flow'
+const fetch = require('./index.js')
+const flow = require('promise-control-flow')
 
 let reqResponses = []
 let reqOptions = []
 let reqUrls = []
 let mockingEnabled = true
 
-export default {
+module.exports = {
   addResponse,
   addResponseError,
   reset,
@@ -19,11 +19,11 @@ export default {
   many
 }
 
-export function addResponse (content) {
+function addResponse (content) {
   reqResponses.push(content)
 }
 
-export function addResponseError (response, content) {
+function addResponseError (response, content) {
   const responseError = new Error('Status ' + response.status)
   responseError.response = response
   responseError.content = content
@@ -31,34 +31,34 @@ export function addResponseError (response, content) {
   reqResponses.push(responseError)
 }
 
-export function reset () {
+function reset () {
   reqResponses = []
   reqOptions = []
   reqUrls = []
   fetch.retry(() => false)
 }
 
-export function urls () {
+function urls () {
   return reqUrls
 }
 
-export function options () {
+function options () {
   return reqOptions
 }
 
-export function lastUrl () {
+function lastUrl () {
   return reqUrls[reqUrls.length - 1]
 }
 
-export function lastOption () {
+function lastOption () {
   return reqOptions[reqOptions.length - 1]
 }
 
-export function enableMocking (bool) {
+function enableMocking (bool) {
   mockingEnabled = bool
 }
 
-export function single (url, opt) {
+function single (url, opt) {
   reqUrls.push(url)
   reqOptions.push(opt)
 
@@ -77,7 +77,7 @@ export function single (url, opt) {
   })
 }
 
-export function many (urls, opt) {
+function many (urls, opt) {
   if (!mockingEnabled) {
     reqUrls = reqUrls.concat(urls)
     reqOptions = reqOptions.concat(opt)

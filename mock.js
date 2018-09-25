@@ -1,4 +1,4 @@
 // This is just a helper file to support the syntax sugar:
-// import mock from 'lets-fetch/mock'
+// const mock = require('lets-fetch/mock')
 
-module.exports = require('./build/mock.js')
+module.exports = require('./src/mock.js')

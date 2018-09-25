@@ -1,5 +1,5 @@
-import fetch from 'isomorphic-fetch'
-import flow from 'promise-control-flow'
+const fetch = require('node-fetch')
+const flow = require('promise-control-flow')
 
 const defaultOptions = {
   type: 'json',
@@ -11,22 +11,22 @@ const defaultOptions = {
 let internalRetry = () => false
 let internalRetryWait = () => false
 
-export default {retry, retryWait, single, many}
+module.exports = { retry, retryWait, single, many }
 
 // Set a custom decider function that decides to retry
 // based on the number of tries and the previous error
-export function retry (decider) {
+function retry (decider) {
   internalRetry = decider
 }
 
 // Set a custom function that sets how long we should
 // sleep between each failed request
-export function retryWait (callback) {
+function retryWait (callback) {
   internalRetryWait = callback
 }
 
 // Request a single url
-export function single (url, options = {}) {
+function single (url, options = {}) {
   let tries = 1
 
   // Execute the request and retry if there are errors (and the
@@ -43,8 +43,8 @@ export function single (url, options = {}) {
 }
 
 // Send a request using the underlying fetch API
-export function request (url, options) {
-  options = {...defaultOptions, ...options}
+function request (url, options) {
+  options = { ...defaultOptions, ...options }
   let savedContent
   let savedResponse
 
@@ -96,7 +96,7 @@ export function request (url, options) {
 }
 
 // Request multiple pages
-export function many (urls, options = {}) {
+function many (urls, options = {}) {
   let flowMethod = (options.waitTime) ? flow.series : flow.parallel
 
   // Call the single method while respecting the wait time in between tasks

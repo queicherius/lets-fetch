@@ -16,7 +16,7 @@ This module can be used for Node.js as well as browsers using [Browserify](https
 ## Usage
 
 ```js
-import fetch from 'lets-fetch'
+const fetch = require('lets-fetch')
 
 // Async / await
 async function myFunction () {
@@ -110,8 +110,8 @@ fetch.retryWait(tries => tries * 100)
 If you want to mock `lets-fetch` in your tests, you can replace it with the included basic mock module, e.g. using [rewire](https://github.com/speedskater/babel-plugin-rewire).
 
 ```js
-import mock from 'lets-fetch/mock'
-import myModule from './test.js'
+const mock = require('lets-fetch/mock')
+const myModule = require('./test.js')
 
 // Overwrite the "fetch" variable in the module to test
 myModule.__set__('fetch', mock)

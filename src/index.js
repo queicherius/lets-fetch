@@ -44,7 +44,7 @@ function single (url, options = {}) {
 
 // Send a request using the underlying fetch API
 function request (url, options) {
-  options = { ...defaultOptions, ...options }
+  options = Object.assign({}, defaultOptions, options)
   let savedContent
   let savedResponse
 

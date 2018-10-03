@@ -1,6 +1,8 @@
 /* eslint-env jest */
 const fetch = require('../src/index.js')
-const fetchMock = require('fetch-mock')
+const fetchMock = require('fetch-mock').sandbox()
+
+fetchMock.config.overwriteRoutes = false
 
 beforeEach(() => {
   fetchMock.restore()
@@ -11,7 +13,7 @@ function mockResponses (array) {
     fetchMock.mock.apply(fetchMock, args)
   })
 
-  fetch.__set__('fetch', fetchMock.fetchMock)
+  fetch.__set__('fetch', fetchMock)
 }
 
 describe('requesting', () => {
@@ -259,8 +261,8 @@ describe('retrying', () => {
     fetch.retry(() => true)
 
     mockResponses([
-      ['http://test.com/test', 500, { times: 3 }],
-      ['http://test.com/test', 'text', { times: 1 }],
+      ['http://test.com/test', 500, { repeat: 3 }],
+      ['http://test.com/test', 'text', { repeat: 1 }],
       ['http://test.com/test', 'not text']
     ])
 
@@ -272,8 +274,8 @@ describe('retrying', () => {
     fetch.retry((tries) => tries <= 3)
 
     mockResponses([
-      ['http://test.com/test', 500, { times: 3 }],
-      ['http://test.com/test', 'text', { times: 1 }],
+      ['http://test.com/test', 500, { repeat: 3 }],
+      ['http://test.com/test', 'text', { repeat: 1 }],
       ['http://test.com/test', 'not text']
     ])
 
@@ -290,8 +292,8 @@ describe('retrying', () => {
     fetch.retry(() => false)
 
     mockResponses([
-      ['http://test.com/test', 500, { times: 1 }],
-      ['http://test.com/test', 'text', { times: 1 }],
+      ['http://test.com/test', 500, { repeat: 1 }],
+      ['http://test.com/test', 'text', { repeat: 1 }],
       ['http://test.com/test', 'not text']
     ])
 
@@ -309,8 +311,8 @@ describe('retrying', () => {
     fetch.retry(callbackMock)
 
     mockResponses([
-      ['http://test.com/test', 500, { times: 1 }],
-      ['http://test.com/test', 'text', { times: 1 }],
+      ['http://test.com/test', 500, { repeat: 1 }],
+      ['http://test.com/test', 'text', { repeat: 1 }],
       ['http://test.com/test', 'not text']
     ])
 
@@ -334,8 +336,8 @@ describe('retrying', () => {
     fetch.retryWait(tries => tries * 100)
 
     mockResponses([
-      ['http://test.com/test', 500, { times: 4 }],
-      ['http://test.com/test', 'text', { times: 1 }],
+      ['http://test.com/test', 500, { repeat: 4 }],
+      ['http://test.com/test', 'text', { repeat: 1 }],
       ['http://test.com/test', 'not text']
     ])
 

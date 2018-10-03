@@ -1,7 +1,7 @@
 # lets-fetch
 
 [![Build Status](https://img.shields.io/travis/queicherius/lets-fetch.svg?style=flat-square)](https://travis-ci.org/queicherius/lets-fetch)
-[![Coverage Status](https://img.shields.io/codecov/c/github/queicherius/lets-fetch/master.svg?style=flat-square)](https://codecov.io/github/queicherius/lets-fetch)
+[![Coverage Status](https://img.shields.io/codecov/c/github/queicherius/lets-fetch/master.svg?style=flat-square)](https://codecov.io/github/queicherius/lets-fetch) [![Greenkeeper badge](https://badges.greenkeeper.io/queicherius/lets-fetch.svg)](https://greenkeeper.io/)
 
 > Single and parallel requests with retrying and error handling.
 

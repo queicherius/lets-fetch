@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-const flow = require('promise-control-flow')
+const flow = require('./flow.js')
 
 const defaultOptions = {
   type: 'json',
@@ -111,10 +111,6 @@ function many (urls, options = {}) {
 // Wait a specific time before executing a callback
 function wait (callback, ms) {
   return new Promise(resolve => {
-    if (!ms) {
-      return resolve(callback())
-    }
-
-    setTimeout(() => resolve(callback()), ms)
+    setTimeout(() => resolve(callback()), ms || 0)
   })
 }

@@ -1,5 +1,5 @@
 const fetch = require('./index.js')
-const flow = require('promise-control-flow')
+const flow = require('./flow.js')
 
 let reqResponses = []
 let reqOptions = []

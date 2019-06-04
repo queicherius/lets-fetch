@@ -13,7 +13,7 @@
     "url": "https://github.com/queicherius/lets-fetch"
   },
   "dependencies": {
-    "node-fetch": "^2.2.0"
+    "cross-fetch": "^3.0.3"
   },
   "devDependencies": {
     "babel-plugin-rewire": "^1.2.0",

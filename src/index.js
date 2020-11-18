@@ -49,7 +49,7 @@ function single (url, options = {}) {
         return data
       })
       .catch(err => {
-        internalLogger({ url, duration: new Date() - start, status: err.response.status, retries: tries - 1 })
+        internalLogger({ url, duration: new Date() - start, status: err && err.response && err.response.status, retries: tries - 1 })
 
         if (internalRetry(++tries, err)) {
           return wait(callRequest, internalRetryWait(tries))

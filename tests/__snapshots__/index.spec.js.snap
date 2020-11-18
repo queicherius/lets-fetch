@@ -1,0 +1,352 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`error handling always throws an status exception from a bad status 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://failing.com/malformed",
+  },
+]
+`;
+
+exports[`error handling throws an decoding exception for malformed json 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://failing.com/malformed",
+  },
+]
+`;
+
+exports[`error handling throws an error if a request fails 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://failing.com/yes",
+  },
+]
+`;
+
+exports[`error handling throws an error if a request fails even when we get the response object 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://failing.com/yes",
+  },
+]
+`;
+
+exports[`error handling throws an error if a request of many fails 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://failing.com/no",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://failing.com/yes",
+  },
+]
+`;
+
+exports[`error handling throws an error that includes the response and the content 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 403,
+    "url": "http://failing.com/erroring",
+  },
+]
+`;
+
+exports[`requesting requests a single url as json 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`requesting requests a single url as response object 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`requesting requests a single url as text 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`requesting requests multiple urls as json 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test2",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test3",
+  },
+]
+`;
+
+exports[`requesting requests multiple urls as response objects 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test2",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test3",
+  },
+]
+`;
+
+exports[`requesting requests multiple urls as text 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test2",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test3",
+  },
+]
+`;
+
+exports[`retrying can access the error object and the retries in the retry decider 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`retrying can disable retrying 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`retrying can specify a wait function for retrying 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 1,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 2,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 3,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 4,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`retrying respects the decider response 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 1,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 2,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`retrying retries on error till success 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 1,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 2,
+    "status": 500,
+    "url": "http://test.com/test",
+  },
+  Object {
+    "duration": 0,
+    "retries": 3,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`underlying fetch api can overwrite the default "fetch" options 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`underlying fetch api provides "fetch" with the options 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://test.com/test",
+  },
+]
+`;
+
+exports[`waiting uses parallel calls if no wait time is specified 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://1.com",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://2.com",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://3.com",
+  },
+]
+`;
+
+exports[`waiting uses sequential calls and waits if a wait time is specified 1`] = `
+Array [
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://1.com",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://2.com",
+  },
+  Object {
+    "duration": 0,
+    "retries": 0,
+    "status": 200,
+    "url": "http://3.com",
+  },
+]
+`;

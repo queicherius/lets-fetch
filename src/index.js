@@ -11,7 +11,10 @@ const defaultOptions = {
 let internalRetry = () => false
 let internalRetryWait = () => false
 
-module.exports = { retry, retryWait, single, many }
+// istanbul ignore next
+let internalLogger = () => false
+
+module.exports = { retry, retryWait, logger, single, many }
 
 // Set a custom decider function that decides to retry
 // based on the number of tries and the previous error
@@ -25,19 +28,36 @@ function retryWait (callback) {
   internalRetryWait = callback
 }
 
+// Set a custom function that logs out information about each request
+function logger (callback) {
+  internalLogger = callback
+}
+
 // Request a single url
 function single (url, options = {}) {
   let tries = 1
 
   // Execute the request and retry if there are errors (and the
   // retry decider decided that we should try our luck again)
-  const callRequest = () => request(url, options).catch(err => {
-    if (internalRetry(++tries, err)) {
-      return wait(callRequest, internalRetryWait(tries))
-    }
+  const callRequest = () => {
+    let start = new Date()
 
-    throw err
-  })
+    return request(url, options)
+      .then((data) => {
+        internalLogger({ url, duration: new Date() - start, status: 200, retries: tries - 1 })
+
+        return data
+      })
+      .catch(err => {
+        internalLogger({ url, duration: new Date() - start, status: err.response.status, retries: tries - 1 })
+
+        if (internalRetry(++tries, err)) {
+          return wait(callRequest, internalRetryWait(tries))
+        }
+
+        throw err
+      })
+  }
 
   return callRequest()
 }

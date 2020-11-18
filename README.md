@@ -105,6 +105,15 @@ fetch.retryWait(() => 100)
 fetch.retryWait(tries => tries * 100)
 ```
 
+## Logging
+
+You can set a custom function that gets called whenever a request is finished (both success and failures).
+
+```js
+fetch.logger((info) => console.log(info))
+// -> { duration: 282, retries: 0, status: 200, url: 'http://test.com/test' }
+```
+
 ## Mocking
 
 If you want to mock `lets-fetch` in your tests, you can replace it with the included basic mock module, e.g. using [rewire](https://github.com/speedskater/babel-plugin-rewire).

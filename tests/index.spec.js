@@ -1,11 +1,15 @@
 /* eslint-env jest */
 const fetch = require('../src/index.js')
 const fetchMock = require('fetch-mock').sandbox()
+const loggerMock = jest.fn()
 
 fetchMock.config.overwriteRoutes = false
 
 beforeEach(() => {
   fetchMock.restore()
+  loggerMock.mockReset()
+
+  fetch.logger(loggerMock)
 })
 
 function mockResponses (array) {
@@ -16,6 +20,13 @@ function mockResponses (array) {
   fetch.__set__('fetch', fetchMock)
 }
 
+function getLogs () {
+  return loggerMock.mock.calls.map(x => ({
+    ...x[0],
+    duration: Math.round(x[0].duration / 1000) * 1000
+  }))
+}
+
 describe('requesting', () => {
   it('requests a single url as json', async () => {
     mockResponses([
@@ -24,6 +35,7 @@ describe('requesting', () => {
 
     let content = await fetch.single('http://test.com/test')
     expect(content).toEqual({ id: 123 })
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('requests a single url as text', async () => {
@@ -33,6 +45,7 @@ describe('requesting', () => {
 
     let content = await fetch.single('http://test.com/test', { type: 'text' })
     expect(content).toEqual('<h1>Foo</h1>')
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('requests a single url as response object', async () => {
@@ -44,6 +57,7 @@ describe('requesting', () => {
     expect(content.url).toEqual('http://test.com/test')
     expect(content.status).toEqual(200)
     expect(content.headers).not.toEqual(undefined)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('requests multiple urls as json', async () => {
@@ -59,6 +73,7 @@ describe('requesting', () => {
       'http://test.com/test3'
     ])
     expect(content).toEqual([{ id: 123 }, { id: 456 }, { id: 789 }])
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('requests multiple urls as text', async () => {
@@ -78,6 +93,7 @@ describe('requesting', () => {
       '<h1>Foo</h1>',
       '<h1>FooBar</h1>'
     ])
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('requests multiple urls as response objects', async () => {
@@ -95,6 +111,7 @@ describe('requesting', () => {
     expect(content[0].url).toEqual('http://test.com/test')
     expect(content[0].status).toEqual(200)
     expect(content[0].headers).not.toEqual(undefined)
+    expect(getLogs()).toMatchSnapshot()
   })
 })
 
@@ -109,6 +126,7 @@ describe('waiting', () => {
     timestamps = timestamps.map(x => x.time)
     expect(timestamps[1] - timestamps[0]).toBeLessThan(20)
     expect(timestamps[2] - timestamps[1]).toBeLessThan(20)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('uses sequential calls and waits if a wait time is specified', async () => {
@@ -124,6 +142,7 @@ describe('waiting', () => {
     timestamps = timestamps.map(x => x.time)
     expect(timestamps[1] - timestamps[0]).toBeGreaterThan(99)
     expect(timestamps[2] - timestamps[1]).toBeGreaterThan(99)
+    expect(getLogs()).toMatchSnapshot()
   })
 })
 
@@ -141,6 +160,7 @@ describe('underlying fetch api', () => {
       headers: {},
       body: undefined
     })
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('can overwrite the default "fetch" options', async () => {
@@ -157,6 +177,7 @@ describe('underlying fetch api', () => {
     let content = await fetch.single('http://test.com/test', options)
     expect(content).toEqual('<h1>Foo</h1>')
     expect(fetchMock.lastOptions()).toEqual(options)
+    expect(getLogs()).toMatchSnapshot()
   })
 })
 
@@ -173,6 +194,7 @@ describe('error handling', () => {
     }
 
     expect(err).toBeInstanceOf(Error)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('throws an error if a request fails even when we get the response object', async () => {
@@ -187,6 +209,7 @@ describe('error handling', () => {
     }
 
     expect(err).toBeInstanceOf(Error)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('throws an error if a request of many fails', async () => {
@@ -205,6 +228,7 @@ describe('error handling', () => {
     }
 
     expect(err).toBeInstanceOf(Error)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('throws an decoding exception for malformed json', async () => {
@@ -220,6 +244,7 @@ describe('error handling', () => {
 
     expect(err).toBeInstanceOf(Error)
     expect(err.message).toEqual(expect.stringContaining('Unexpected token'))
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('always throws an status exception from a bad status', async () => {
@@ -235,6 +260,7 @@ describe('error handling', () => {
 
     expect(err).toBeInstanceOf(Error)
     expect(err.message).toEqual('Status 500')
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('throws an error that includes the response and the content', async () => {
@@ -253,6 +279,7 @@ describe('error handling', () => {
     expect(err.message).toEqual('Status 403')
     expect(err.response.status).toEqual(403)
     expect(err.content).toEqual({ text: 'authentication required' })
+    expect(getLogs()).toMatchSnapshot()
   })
 })
 
@@ -268,6 +295,7 @@ describe('retrying', () => {
 
     let content = await fetch.single('http://test.com/test', { type: 'text' })
     expect(content).toEqual('text')
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('respects the decider response', async () => {
@@ -286,6 +314,7 @@ describe('retrying', () => {
     }
 
     expect(err).toBeInstanceOf(Error)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('can disable retrying', async () => {
@@ -304,6 +333,7 @@ describe('retrying', () => {
     }
 
     expect(err).toBeInstanceOf(Error)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('can access the error object and the retries in the retry decider', async () => {
@@ -329,6 +359,7 @@ describe('retrying', () => {
     expect(deciderArguments[1]).toBeInstanceOf(Error)
     expect(deciderArguments[1].response).not.toEqual(undefined)
     expect(deciderArguments[1].response.status).toEqual(500)
+    expect(getLogs()).toMatchSnapshot()
   })
 
   it('can specify a wait function for retrying', async () => {
@@ -344,5 +375,6 @@ describe('retrying', () => {
     let start = new Date()
     await fetch.single('http://test.com/test', { type: 'text' })
     expect(new Date() - start).toBeGreaterThan(99 * (1 + 2 + 3 + 4))
+    expect(getLogs()).toMatchSnapshot()
   })
 })
